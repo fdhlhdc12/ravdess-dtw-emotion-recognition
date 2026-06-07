@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import librosa
 import librosa.display
@@ -278,4 +277,3 @@ if uploaded_file is not None:
         Predictions on external recordings may have lower accuracy.
         """
     )
-```
