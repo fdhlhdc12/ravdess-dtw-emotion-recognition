@@ -156,15 +156,21 @@ if uploaded_file is not None:
     )[0]
 
     probs = svm_model.predict_proba(
-        feature
-    )[0]
+    feature
+)[0]
 
-    confidence = np.max(probs)
-    if confidence < 0.50:
+confidence = np.max(probs)
 
+if confidence < 0.50:
     st.warning(
         "Low confidence prediction. Audio may differ from training data."
     )
+
+# ======================
+# Result
+# ======================
+
+st.subheader("Prediction Result")
 
     # ======================
     # Result
