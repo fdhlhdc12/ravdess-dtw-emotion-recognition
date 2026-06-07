@@ -1,8 +1,8 @@
 streamlit
-librosa
 numpy
 pandas
 scikit-learn
-dtaidistance
-soundfile
+librosa
+matplotlib
 joblib
+soundfile
