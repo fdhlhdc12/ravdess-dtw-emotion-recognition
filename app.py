@@ -123,6 +123,8 @@ if uploaded_file is not None:
 
     feature = feature.reshape(1,-1)
 
+    feature = scaler.transform(feature)
+
     # ======================
     # KNN Prediction
     # ======================
