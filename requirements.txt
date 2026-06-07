@@ -1,0 +1,10 @@
+librosa==0.10.1
+numpy
+pandas
+scikit-learn
+dtaidistance
+streamlit
+matplotlib
+seaborn
+joblib
+soundfile
