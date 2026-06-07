@@ -172,26 +172,19 @@ if confidence < 0.50:
 
 st.subheader("Prediction Result")
 
-    # ======================
-    # Result
-    # ======================
+col3, col4 = st.columns(2)
 
-    st.subheader("Prediction Result")
+with col3:
 
-    col3, col4 = st.columns(2)
+    st.success(
+        f"KNN : {emotion_knn.upper()}"
+    )
 
-    with col3:
+with col4:
 
-        st.success(
-            f"KNN : {emotion_knn.upper()}"
-        )
-
-    with col4:
-
-        st.success(
-            f"SVM : {emotion_svm.upper()} ({confidence:.2%})"
-        )
-
+    st.success(
+        f"SVM : {emotion_svm.upper()} ({confidence:.2%})"
+    )
     # ======================
     # Probability
     # ======================
