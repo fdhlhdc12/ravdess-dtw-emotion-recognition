@@ -16,6 +16,7 @@ from feature_extraction import extract_feature
 knn_model = joblib.load("model_knn.pkl")
 svm_model = joblib.load("model_svm.pkl")
 encoder = joblib.load("label_encoder.pkl")
+scaler = joblib.load("scaler.pkl")
 
 # ======================
 # Page Config
