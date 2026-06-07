@@ -32,13 +32,23 @@ st.title("🎤 Speech Emotion Recognition")
 st.markdown("MFCC + KNN vs MFCC + SVM")
 
 uploaded_file = st.file_uploader(
-    "Upload Audio WAV",
-    type=["wav"]
+    "Upload Audio",
+    type=[
+        "wav",
+        "mp3",
+        "m4a",
+        "ogg",
+        "flac"
+    ]
 )
 
 if uploaded_file is not None:
 
     st.audio(uploaded_file)
+    st.write(
+    "File Type:",
+    uploaded_file.type
+)
 
     with tempfile.NamedTemporaryFile(
         delete=False,
@@ -150,6 +160,11 @@ if uploaded_file is not None:
     )[0]
 
     confidence = np.max(probs)
+    if confidence < 0.50:
+
+    st.warning(
+        "Low confidence prediction. Audio may differ from training data."
+    )
 
     # ======================
     # Result
