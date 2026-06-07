@@ -1,108 +1,37 @@
 import streamlit as st
 import librosa
-import pickle
+import librosa.display
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import tempfile
+import joblib
 
-from dtaidistance import dtw
-from collections import Counter
+from feature_extraction import extract_feature
 
-# =========================
-# LOAD DATA TRAINING
-# =========================
+# ======================
+# Load Models
+# ======================
 
-with open("train_features.pkl", "rb") as f:
-    train_features = pickle.load(f)
+knn_model = joblib.load("model_knn.pkl")
+svm_model = joblib.load("model_svm.pkl")
+encoder = joblib.load("label_encoder.pkl")
 
-with open("train_labels.pkl", "rb") as f:
-    train_labels = pickle.load(f)
-
-# =========================
-# MFCC FEATURE EXTRACTION
-# =========================
-
-def extract_mfcc(file_path):
-
-    signal, sr = librosa.load(
-        file_path,
-        sr=22050
-    )
-
-    mfcc = librosa.feature.mfcc(
-        y=signal,
-        sr=sr,
-        n_mfcc=13
-    )
-
-    return mfcc.T
-
-# =========================
-# DTW DISTANCE
-# =========================
-
-def dtw_distance(a, b):
-
-    return dtw.distance(
-        a.flatten(),
-        b.flatten()
-    )
-
-# =========================
-# KNN-DTW CLASSIFIER
-# =========================
-
-def predict_knn_dtw(
-    test_mfcc,
-    train_features,
-    train_labels,
-    k=3
-):
-
-    distances = []
-
-    for feature, label in zip(
-        train_features,
-        train_labels
-    ):
-
-        dist = dtw_distance(
-            test_mfcc,
-            feature
-        )
-
-        distances.append(
-            (dist, label)
-        )
-
-    distances.sort()
-
-    nearest = distances[:k]
-
-    nearest_labels = [
-        label for _, label in nearest
-    ]
-
-    prediction = Counter(
-        nearest_labels
-    ).most_common(1)[0][0]
-
-    return prediction
-
-# =========================
-# STREAMLIT UI
-# =========================
+# ======================
+# Page Config
+# ======================
 
 st.set_page_config(
     page_title="Speech Emotion Recognition",
-    layout="centered"
+    page_icon="🎤",
+    layout="wide"
 )
 
 st.title("🎤 Speech Emotion Recognition")
-st.write(
-    "Klasifikasi emosi suara menggunakan MFCC, DTW, dan KNN pada dataset RAVDESS."
-)
+st.markdown("MFCC + KNN vs MFCC + SVM")
 
 uploaded_file = st.file_uploader(
-    "Upload file audio (.wav)",
+    "Upload Audio WAV",
     type=["wav"]
 )
 
@@ -115,27 +44,145 @@ if uploaded_file is not None:
         suffix=".wav"
     ) as tmp:
 
-        tmp.write(
-            uploaded_file.read()
+        tmp.write(uploaded_file.read())
+
+        audio_path = tmp.name
+
+    y, sr = librosa.load(
+        audio_path,
+        sr=None
+    )
+
+    duration = librosa.get_duration(
+        y=y,
+        sr=sr
+    )
+
+    # ======================
+    # Waveform
+    # ======================
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.subheader("Waveform")
+
+        fig, ax = plt.subplots()
+
+        librosa.display.waveshow(
+            y,
+            sr=sr,
+            ax=ax
         )
 
-        temp_path = tmp.name
+        st.pyplot(fig)
 
-    with st.spinner(
-        "Melakukan klasifikasi..."
-    ):
+    # ======================
+    # Spectrogram
+    # ======================
 
-        mfcc_test = extract_mfcc(
-            temp_path
+    with col2:
+
+        st.subheader("Spectrogram")
+
+        D = librosa.amplitude_to_db(
+            np.abs(librosa.stft(y)),
+            ref=np.max
         )
 
-        prediction = predict_knn_dtw(
-            mfcc_test,
-            train_features,
-            train_labels,
-            k=3
+        fig2, ax2 = plt.subplots()
+
+        img = librosa.display.specshow(
+            D,
+            sr=sr,
+            x_axis="time",
+            y_axis="hz",
+            ax=ax2
         )
 
-    st.success(
-        f"Prediksi Emosi: {prediction.upper()}"
+        plt.colorbar(img)
+
+        st.pyplot(fig2)
+
+    # ======================
+    # Audio Information
+    # ======================
+
+    st.subheader("Audio Information")
+
+    st.write(f"Duration : {duration:.2f} sec")
+    st.write(f"Sample Rate : {sr}")
+
+    # ======================
+    # Feature Extraction
+    # ======================
+
+    feature = extract_feature(audio_path)
+
+    feature = feature.reshape(1,-1)
+
+    # ======================
+    # KNN Prediction
+    # ======================
+
+    pred_knn = knn_model.predict(feature)
+
+    emotion_knn = encoder.inverse_transform(
+        pred_knn
+    )[0]
+
+    # ======================
+    # SVM Prediction
+    # ======================
+
+    pred_svm = svm_model.predict(feature)
+
+    emotion_svm = encoder.inverse_transform(
+        pred_svm
+    )[0]
+
+    probs = svm_model.predict_proba(
+        feature
+    )[0]
+
+    confidence = np.max(probs)
+
+    # ======================
+    # Result
+    # ======================
+
+    st.subheader("Prediction Result")
+
+    col3, col4 = st.columns(2)
+
+    with col3:
+
+        st.success(
+            f"KNN : {emotion_knn.upper()}"
+        )
+
+    with col4:
+
+        st.success(
+            f"SVM : {emotion_svm.upper()} ({confidence:.2%})"
+        )
+
+    # ======================
+    # Probability
+    # ======================
+
+    st.subheader("Emotion Probability")
+
+    prob_df = pd.DataFrame({
+
+        "Emotion": encoder.classes_,
+        "Probability": probs
+
+    })
+
+    st.bar_chart(
+        prob_df.set_index(
+            "Emotion"
+        )
     )
