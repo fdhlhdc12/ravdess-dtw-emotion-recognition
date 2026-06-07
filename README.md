@@ -1,41 +1,54 @@
-# Speech Emotion Recognition using DTW
-## Deskripsi
-Proyek ini merupakan implementasi klasifikasi emosi suara menggunakan metode Dynamic Time Warping (DTW) dan K-Nearest Neighbor (KNN) pada dataset RAVDESS (Ryerson Audio-Visual Database of Emotional Speech and Song).Penelitian ini dilakukan sebagai tugas Mata Kuliah Analisis Data Lanjut Program Magister Statistika.
----
+# 🎤 Speech Emotion Recognition using RAVDESS
 
-## Tujuan
-Mengklasifikasikan emosi pada data suara berdasarkan kemiripan pola temporal menggunakan Dynamic Time Warping (DTW).
----
+## Overview
+
+This project performs speech emotion classification using the RAVDESS dataset.
+
+The workflow includes:
+
+* Audio preprocessing
+* MFCC feature extraction
+* K-Nearest Neighbor (KNN)
+* Support Vector Machine (SVM)
+* Interactive Streamlit dashboard
 
 ## Dataset
-Dataset yang digunakan adalah RAVDESS (Ryerson Audio-Visual Database of Emotional Speech and Song).
 
-Emosi yang digunakan:
-- Neutral
-- Calm
-- Happy
-- Sad
-- Angry
-- Fearful
-- Disgust
-- Surprised
+RAVDESS (Ryerson Audio-Visual Database of Emotional Speech and Song)
 
-Karena ukuran dataset cukup besar, dataset tidak disimpan dalam repository ini dan diakses melalui Google Drive saat proses training pada Google Colab.
----
+Supported emotions:
 
-## Metodologi
-Tahapan analisis yang dilakukan:
+* Angry
+* Calm
+* Disgust
+* Fearful
+* Happy
+* Neutral
+* Sad
+* Surprised
 
-1. Data Collection
-2. Audio Preprocessing
-3. Feature Extraction menggunakan MFCC
-4. Similarity Measurement menggunakan DTW
-5. Klasifikasi menggunakan KNN-DTW
-6. Evaluasi Model
-7. Deployment menggunakan Streamlit
+## Dashboard Features
+
+* Upload WAV audio
+* Audio playback
+* Waveform visualization
+* Spectrogram visualization
+* KNN prediction
+* SVM prediction
+* Emotion probability chart
+
+## Run Locally
+
+pip install -r requirements.txt
+
+streamlit run app.py
+
+## Models
+
+* model_knn.pkl
+* model_svm.pkl
+* label_encoder.pkl
 
 ## Author
-Nama: Caesariansyah Dwi Fadhilah
-Program Studi Magister Statistika
-Institut Teknologi Sepuluh Nopember
-Tahun 2026
+
+Speech Emotion Recognition Project using MFCC, KNN, and SVM.
