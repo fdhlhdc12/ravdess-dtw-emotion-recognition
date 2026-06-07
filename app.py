@@ -1,49 +1,141 @@
 import streamlit as st
-import librosa, numpy as np, joblib
-from src.features import extract_features
-import matplotlib.pyplot as plt
-import io
+import librosa
+import pickle
+import tempfile
 
-st.set_page_config(page_title="Speech Emotion Recognition", page_icon="🎙️")
-st.title("🎙️ Speech Emotion Recognition")
-st.markdown("**Dataset:** RAVDESS | **Method:** MFCC Features + DTW/Random Forest")
+from dtaidistance import dtw
+from collections import Counter
 
-model = joblib.load('models/emotion_classifier.pkl')
+# =========================
+# LOAD DATA TRAINING
+# =========================
 
-EMOTIONS = {
-    'neutral': '😐', 'calm': '😌', 'happy': '😊', 'sad': '😢',
-    'angry': '😠', 'fearful': '😨', 'disgust': '🤢', 'surprised': '😲'
-}
+with open("train_features.pkl", "rb") as f:
+    train_features = pickle.load(f)
 
-uploaded = st.file_uploader("Upload file audio (.wav)", type=['wav'])
+with open("train_labels.pkl", "rb") as f:
+    train_labels = pickle.load(f)
 
-if uploaded:
-    audio_bytes = uploaded.read()
-    st.audio(audio_bytes, format='audio/wav')
-    
-    # Load dan ekstrak fitur
-    y, sr = librosa.load(io.BytesIO(audio_bytes), duration=3.0, offset=0.5)
-    feat, mfcc = extract_features(io.BytesIO(audio_bytes))
-    
-    # Prediksi
-    pred = model.predict([feat])[0]
-    prob = model.predict_proba([feat])[0]
-    
-    st.markdown(f"## Emosi Terdeteksi: {EMOTIONS[pred]} **{pred.upper()}**")
-    
-    # Bar chart probabilitas
-    classes = model.classes_
-    fig, ax = plt.subplots(figsize=(8, 3))
-    bars = ax.barh(classes, prob, color=['#ff6b6b' if c==pred else '#74b9ff' for c in classes])
-    ax.set_xlabel('Probabilitas')
-    ax.set_title('Distribusi Prediksi Emosi')
-    st.pyplot(fig)
-    
-    # Visualisasi MFCC (DTW input)
-    fig2, ax2 = plt.subplots(figsize=(8, 3))
-    librosa.display.specshow(mfcc, x_axis='time', ax=ax2)
-    ax2.set_title('MFCC (Time Series — input untuk DTW)')
-    plt.colorbar(ax2.collections[0], ax=ax2)
-    st.pyplot(fig2)
-    
-    st.caption("MFCC time series di atas adalah representasi yang dibandingkan dengan DTW antar sampel suara")
+# =========================
+# MFCC FEATURE EXTRACTION
+# =========================
+
+def extract_mfcc(file_path):
+
+    signal, sr = librosa.load(
+        file_path,
+        sr=22050
+    )
+
+    mfcc = librosa.feature.mfcc(
+        y=signal,
+        sr=sr,
+        n_mfcc=13
+    )
+
+    return mfcc.T
+
+# =========================
+# DTW DISTANCE
+# =========================
+
+def dtw_distance(a, b):
+
+    return dtw.distance(
+        a.flatten(),
+        b.flatten()
+    )
+
+# =========================
+# KNN-DTW CLASSIFIER
+# =========================
+
+def predict_knn_dtw(
+    test_mfcc,
+    train_features,
+    train_labels,
+    k=3
+):
+
+    distances = []
+
+    for feature, label in zip(
+        train_features,
+        train_labels
+    ):
+
+        dist = dtw_distance(
+            test_mfcc,
+            feature
+        )
+
+        distances.append(
+            (dist, label)
+        )
+
+    distances.sort()
+
+    nearest = distances[:k]
+
+    nearest_labels = [
+        label for _, label in nearest
+    ]
+
+    prediction = Counter(
+        nearest_labels
+    ).most_common(1)[0][0]
+
+    return prediction
+
+# =========================
+# STREAMLIT UI
+# =========================
+
+st.set_page_config(
+    page_title="Speech Emotion Recognition",
+    layout="centered"
+)
+
+st.title("🎤 Speech Emotion Recognition")
+st.write(
+    "Klasifikasi emosi suara menggunakan MFCC, DTW, dan KNN pada dataset RAVDESS."
+)
+
+uploaded_file = st.file_uploader(
+    "Upload file audio (.wav)",
+    type=["wav"]
+)
+
+if uploaded_file is not None:
+
+    st.audio(uploaded_file)
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".wav"
+    ) as tmp:
+
+        tmp.write(
+            uploaded_file.read()
+        )
+
+        temp_path = tmp.name
+
+    with st.spinner(
+        "Melakukan klasifikasi..."
+    ):
+
+        mfcc_test = extract_mfcc(
+            temp_path
+        )
+
+        prediction = predict_knn_dtw(
+            mfcc_test,
+            train_features,
+            train_labels,
+            k=3
+        )
+
+    st.success(
+        f"Prediksi Emosi: {prediction.upper()}"
+    )
