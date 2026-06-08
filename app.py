@@ -818,74 +818,21 @@ if uploaded_file is not None:
     # RANKING PROGRESS BAR
     # ==========================================
 
-    with a1:
+with a1:
 
-        st.markdown("""
-        <div class="glass-card">
+    st.markdown("### 🏅 Emotion Ranking")
 
-        <h3>
-        🏅 Emotion Ranking
-        </h3>
+    ranking_df = prob_df.copy()
 
-        </div>
-        """,
-        unsafe_allow_html=True)
+    ranking_df["Probability"] = (
+        ranking_df["Probability"] * 100
+    ).round(2)
 
-        for _, row in prob_df.iterrows():
-
-            emotion = row["Emotion"]
-
-            probability = float(
-                row["Probability"]
-            )
-
-            st.markdown(
-                f"""
-                <div style="
-                margin-bottom:15px;
-                ">
-
-                <b style="
-                color:white;
-                ">
-                {emotion_icon.get(emotion,'🎤')}
-                {emotion.upper()}
-                </b>
-
-                <div style="
-                background:#1e293b;
-                border-radius:15px;
-                overflow:hidden;
-                margin-top:5px;
-                ">
-
-                    <div style="
-                    width:{probability*100:.1f}%;
-
-                    height:14px;
-
-                    background:
-                    linear-gradient(
-                        90deg,
-                        #06b6d4,
-                        #3b82f6
-                    );
-                    ">
-                    </div>
-
-                </div>
-
-                <span style="
-                color:white;
-                font-size:13px;
-                ">
-                {probability:.2%}
-                </span>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+    st.dataframe(
+        ranking_df,
+        use_container_width=True,
+        hide_index=True
+    )
 
     # ==========================================
     # BAR CHART
