@@ -7,5 +7,4 @@ scikit-learn==1.6.1
 joblib
 soundfile
 audioread
-tensorflow
 ffmpeg-python
