@@ -16,20 +16,20 @@ from feature_extraction_ml import extract_feature_ml
 # =====================================================
 
 st.set_page_config(
-    page_title="Speech Emotion Recognition AI",
+    page_title="Speech Emotion Recognition",
     page_icon="🎤",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # =====================================================
-# PREMIUM CSS
+# CSS
 # =====================================================
 
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 html, body, [class*="css"]{
     font-family:'Poppins', sans-serif;
@@ -47,24 +47,18 @@ header{
     visibility:hidden;
 }
 
-/* ===================================================== */
-/* APP */
-/* ===================================================== */
-
 .stApp{
 
     background:
-    radial-gradient(
-        circle at top left,
-        #1e3a8a 0%,
-        #0f172a 40%,
-        #020617 100%
+    linear-gradient(
+        135deg,
+        #020617,
+        #0f172a,
+        #111827
     );
 }
 
-/* ===================================================== */
 /* SIDEBAR */
-/* ===================================================== */
 
 section[data-testid="stSidebar"]{
 
@@ -72,100 +66,52 @@ section[data-testid="stSidebar"]{
     linear-gradient(
         180deg,
         #020617,
-        #0f172a
+        #111827
     );
-
-    border-right:
-    1px solid rgba(255,255,255,.08);
 }
 
-/* ===================================================== */
-/* GLASS CARD */
-/* ===================================================== */
+section[data-testid="stSidebar"] *{
 
-.glass-card{
-
-    background:
-    rgba(15,23,42,.75);
-
-    backdrop-filter:blur(15px);
-
-    border-radius:28px;
-
-    padding:25px;
-
-    border:
-    1px solid rgba(255,255,255,.08);
-
-    margin-bottom:20px;
+    color:white !important;
 }
 
-/* ===================================================== */
-/* HERO */
-/* ===================================================== */
-
-.hero-card{
-
-    background:
-    linear-gradient(
-        135deg,
-        rgba(37,99,235,.9),
-        rgba(124,58,237,.9)
-    );
-
-    border-radius:30px;
-
-    padding:35px;
-
-    margin-bottom:25px;
-
-    box-shadow:
-    0 20px 50px rgba(37,99,235,.25);
-}
-
-/* ===================================================== */
-/* KPI */
-/* ===================================================== */
+/* KPI CARD */
 
 .kpi-card{
 
     background:
-    rgba(15,23,42,.85);
+    rgba(30,41,59,.9);
 
-    border-radius:25px;
-
-    padding:22px;
-
-    text-align:center;
-
-    border:
-    1px solid rgba(255,255,255,.08);
-
-    min-height:170px;
-}
-
-/* ===================================================== */
-/* PREDICTION */
-/* ===================================================== */
-
-.pred-card{
-
-    background:
-    rgba(15,23,42,.85);
-
-    border-radius:25px;
+    border-radius:24px;
 
     padding:25px;
 
+    text-align:center;
+
     border:
     1px solid rgba(255,255,255,.08);
 
-    text-align:center;
+    min-height:150px;
 }
 
-/* ===================================================== */
-/* FINAL */
-/* ===================================================== */
+/* MODEL CARD */
+
+.model-card{
+
+    background:
+    rgba(30,41,59,.9);
+
+    border-radius:24px;
+
+    padding:25px;
+
+    text-align:center;
+
+    border:
+    1px solid rgba(255,255,255,.08);
+}
+
+/* FINAL CARD */
 
 .final-card{
 
@@ -176,52 +122,45 @@ section[data-testid="stSidebar"]{
         #7c3aed
     );
 
-    border-radius:35px;
+    border-radius:30px;
 
     padding:40px;
 
     text-align:center;
 
-    box-shadow:
-    0px 25px 60px rgba(37,99,235,.35);
+    color:white;
 }
 
-/* ===================================================== */
-/* FILE UPLOADER */
-/* ===================================================== */
+/* GLASS */
 
-[data-testid="stFileUploader"]{
+.glass{
 
     background:
-    rgba(15,23,42,.75);
+    rgba(30,41,59,.85);
 
-    border-radius:20px;
+    border-radius:24px;
 
-    padding:15px;
+    padding:20px;
 
     border:
-    1px dashed #60a5fa;
+    1px solid rgba(255,255,255,.08);
 }
-
-/* ===================================================== */
-/* TEXT */
-/* ===================================================== */
 
 h1,h2,h3,h4,h5,h6{
 
     color:white !important;
 }
 
-p,span,label{
+p{
 
-    color:#e2e8f0 !important;
+    color:#cbd5e1 !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # =====================================================
-# LOAD MODELS
+# LOAD MODEL
 # =====================================================
 
 @st.cache_resource
@@ -253,10 +192,11 @@ def load_models():
 knn_model, svm_model, encoder, scaler = load_models()
 
 # =====================================================
-# EMOTION ICONS
+# EMOTION ICON
 # =====================================================
 
 emotion_icon = {
+
     "angry":"😠",
     "calm":"😌",
     "disgust":"🤢",
@@ -286,13 +226,13 @@ with st.sidebar:
     st.markdown("""
 ### 🎭 Dataset
 
-**RAVDESS**
+RAVDESS
 
 • 24 Actors
 
 • 2880 Audio Files
 
-• 8 Emotion Classes
+• 8 Emotions
 """)
 
     st.markdown("---")
@@ -300,33 +240,23 @@ with st.sidebar:
     st.markdown("""
 ### 🤖 Models
 
-• KNN + GridSearchCV
+• KNN
 
-• SVM + GridSearchCV
+• SVM
+
+• GridSearchCV
 """)
 
     st.markdown("---")
 
     st.markdown("""
-### 🧠 AI Engine
+### 🧠 Features
 
 • MFCC
 
 • Delta
 
 • Delta²
-
-• StandardScaler
-""")
-
-    st.markdown("---")
-
-    st.markdown("""
-### 🎓 About
-
-Speech Emotion Recognition Dashboard
-
-Built using Machine Learning
 """)
 
 # =====================================================
@@ -336,53 +266,55 @@ Built using Machine Learning
 if os.path.exists(
     "assets/banner.png"
 ):
+
     st.image(
         "assets/banner.png",
-        use_container_width=True
+        width="stretch"
     )
 
 # =====================================================
-# UPLOAD SECTION
+# HEADER
 # =====================================================
 
 st.markdown("""
-<div class="glass-card">
+<div class="glass">
 
 <h2>🎙 Upload Audio</h2>
 
 <p>
-Upload a speech recording and let the AI
-predict the speaker's emotion.
+Upload speech audio and let AI predict
+the emotion automatically.
 </p>
 
 </div>
 """, unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
-    "",
+    "Upload Audio",
     type=[
         "wav",
         "mp3",
         "m4a",
         "ogg",
         "flac"
-    ]
+    ],
+    label_visibility="collapsed"
 )
 
 # =====================================================
-# HELPER FUNCTION
+# PLOTLY THEME
 # =====================================================
 
-def create_dark_layout():
+def dark_layout():
 
     return dict(
 
         paper_bgcolor="#0f172a",
+
         plot_bgcolor="#0f172a",
 
         font=dict(
-            color="white",
-            family="Poppins"
+            color="white"
         ),
 
         margin=dict(
@@ -400,18 +332,14 @@ def create_dark_layout():
 if uploaded_file is not None:
 
     # ==========================================
-    # AUDIO PLAYER CARD
+    # AUDIO PLAYER
     # ==========================================
 
-    st.markdown("""
-    <div class="glass-card">
+    st.markdown("## 🎧 Audio Preview")
 
-    <h2>🎧 Audio Preview</h2>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.audio(uploaded_file)
+    st.audio(
+        uploaded_file
+    )
 
     # ==========================================
     # SAVE TEMP FILE
@@ -429,11 +357,11 @@ if uploaded_file is not None:
         audio_path = tmp.name
 
     # ==========================================
-    # AI ANALYSIS
+    # ANALYSIS
     # ==========================================
 
     with st.spinner(
-        "🧠 AI is analyzing the emotion..."
+        "🧠 Analyzing Emotion..."
     ):
 
         y, sr = librosa.load(
@@ -445,10 +373,6 @@ if uploaded_file is not None:
             y=y,
             sr=sr
         )
-
-        # ======================================
-        # FEATURE EXTRACTION
-        # ======================================
 
         feature = extract_feature_ml(
             audio_path
@@ -463,9 +387,9 @@ if uploaded_file is not None:
             feature
         )
 
-        # ======================================
+        # ============================
         # PREDICTION
-        # ======================================
+        # ============================
 
         pred_knn = knn_model.predict(
             feature
@@ -491,23 +415,19 @@ if uploaded_file is not None:
             np.max(probs)
         )
 
-    # ==========================================
-    # TOP EMOTION
-    # ==========================================
-
-    top_emotion = emotion_svm
+        top_emotion = emotion_svm
 
     # ==========================================
-    # KPI SECTION
+    # KPI CARDS
     # ==========================================
 
     st.markdown(
         "## 📊 Audio Analytics"
     )
 
-    k1, k2, k3, k4 = st.columns(4)
+    c1, c2, c3, c4 = st.columns(4)
 
-    with k1:
+    with c1:
 
         st.markdown(f"""
         <div class="kpi-card">
@@ -522,7 +442,7 @@ if uploaded_file is not None:
         """,
         unsafe_allow_html=True)
 
-    with k2:
+    with c2:
 
         st.markdown(f"""
         <div class="kpi-card">
@@ -537,7 +457,7 @@ if uploaded_file is not None:
         """,
         unsafe_allow_html=True)
 
-    with k3:
+    with c3:
 
         st.markdown(f"""
         <div class="kpi-card">
@@ -546,18 +466,18 @@ if uploaded_file is not None:
 
         <h1>{confidence:.1%}</h1>
 
-        <p>Prediction Score</p>
+        <p>AI Score</p>
 
         </div>
         """,
         unsafe_allow_html=True)
 
-    with k4:
+    with c4:
 
         st.markdown(f"""
         <div class="kpi-card">
 
-        <h3>🏆 Top Emotion</h3>
+        <h3>🏆 Emotion</h3>
 
         <h1>
         {emotion_icon.get(top_emotion,'🎤')}
@@ -579,13 +499,13 @@ if uploaded_file is not None:
         "## 🎵 Audio Visualization"
     )
 
-    col1, col2 = st.columns(2)
+    v1, v2 = st.columns(2)
 
     # ======================================
     # WAVEFORM
     # ======================================
 
-    with col1:
+    with v1:
 
         time_axis = np.linspace(
             0,
@@ -598,13 +518,18 @@ if uploaded_file is not None:
         fig_wave.add_trace(
 
             go.Scatter(
+
                 x=time_axis,
+
                 y=y,
+
                 mode="lines",
+
                 line=dict(
                     color="#60a5fa",
-                    width=1
+                    width=2
                 ),
+
                 name="Waveform"
             )
         )
@@ -619,31 +544,35 @@ if uploaded_file is not None:
 
             height=350,
 
-            **create_dark_layout()
+            **dark_layout()
         )
 
         st.plotly_chart(
             fig_wave,
-            use_container_width=True
+            width="stretch"
         )
 
     # ======================================
     # SPECTROGRAM
     # ======================================
 
-    with col2:
+    with v2:
 
         D = librosa.amplitude_to_db(
+
             np.abs(
                 librosa.stft(y)
             ),
+
             ref=np.max
         )
 
         fig_spec = go.Figure(
 
             data=go.Heatmap(
+
                 z=D,
+
                 colorscale="Turbo"
             )
         )
@@ -652,22 +581,22 @@ if uploaded_file is not None:
 
             title="Spectrogram",
 
-            height=350,
-
             xaxis_title="Frames",
 
             yaxis_title="Frequency",
 
-            **create_dark_layout()
+            height=350,
+
+            **dark_layout()
         )
 
         st.plotly_chart(
             fig_spec,
-            use_container_width=True
+            width="stretch"
         )
 
     # ==========================================
-    # PROBABILITY DATAFRAME
+    # PROBABILITY DATA
     # ==========================================
 
     prob_df = pd.DataFrame({
@@ -680,20 +609,17 @@ if uploaded_file is not None:
     })
 
     prob_df = prob_df.sort_values(
+
         by="Probability",
+
         ascending=False
     )
 
     # ==========================================
-    # PASS DATA TO PART 3
+    # SAVE FOR PART 3
     # ==========================================
 
-    prediction_data = {
-        "emotion_knn": emotion_knn,
-        "emotion_svm": emotion_svm,
-        "confidence": confidence,
-        "prob_df": prob_df
-    }
+    final_emotion = emotion_svm
 
     # =====================================================
     # MODEL PREDICTIONS
@@ -705,19 +631,15 @@ if uploaded_file is not None:
 
     p1, p2 = st.columns(2)
 
-    # ==========================================
-    # KNN CARD
-    # ==========================================
-
     with p1:
 
         st.markdown(f"""
-        <div class="pred-card">
+        <div class="model-card">
 
         <h3>🔵 KNN MODEL</h3>
 
         <h1 style="
-        font-size:90px;
+        font-size:80px;
         margin-bottom:0px;
         ">
         {emotion_icon.get(emotion_knn,'🎤')}
@@ -728,26 +650,22 @@ if uploaded_file is not None:
         </h2>
 
         <p>
-        K-Nearest Neighbor Prediction
+        K-Nearest Neighbor
         </p>
 
         </div>
         """,
         unsafe_allow_html=True)
 
-    # ==========================================
-    # SVM CARD
-    # ==========================================
-
     with p2:
 
         st.markdown(f"""
-        <div class="pred-card">
+        <div class="model-card">
 
         <h3>🟣 SVM MODEL</h3>
 
         <h1 style="
-        font-size:90px;
+        font-size:80px;
         margin-bottom:0px;
         ">
         {emotion_icon.get(emotion_svm,'🎤')}
@@ -758,7 +676,7 @@ if uploaded_file is not None:
         </h2>
 
         <p>
-        Support Vector Machine Prediction
+        Support Vector Machine
         </p>
 
         </div>
@@ -766,7 +684,7 @@ if uploaded_file is not None:
         unsafe_allow_html=True)
 
     # =====================================================
-    # FINAL PREDICTION HERO
+    # FINAL HERO
     # =====================================================
 
     st.markdown(
@@ -781,20 +699,18 @@ if uploaded_file is not None:
     </h3>
 
     <h1 style="
-    font-size:140px;
+    font-size:120px;
     margin-bottom:0px;
     ">
-    {emotion_icon.get(emotion_svm,'🎤')}
+    {emotion_icon.get(final_emotion,'🎤')}
     </h1>
 
-    <h1 style="
-    font-size:54px;
-    ">
-    {emotion_svm.upper()}
+    <h1>
+    {final_emotion.upper()}
     </h1>
 
     <h3>
-    Confidence Score:
+    Confidence Score :
     {confidence:.2%}
     </h3>
 
@@ -815,24 +731,37 @@ if uploaded_file is not None:
     )
 
     # ==========================================
-    # RANKING PROGRESS BAR
+    # RANKING
     # ==========================================
 
-with a1:
+    with a1:
 
-    st.markdown("### 🏅 Emotion Ranking")
+        st.markdown(
+            "### 🏅 Emotion Ranking"
+        )
 
-    ranking_df = prob_df.copy()
+        for _, row in prob_df.iterrows():
 
-    ranking_df["Probability"] = (
-        ranking_df["Probability"] * 100
-    ).round(2)
+            emotion = row["Emotion"]
 
-    st.dataframe(
-        ranking_df,
-        use_container_width=True,
-        hide_index=True
-    )
+            probability = float(
+                row["Probability"]
+            )
+
+            st.markdown(
+                f"""
+                **{emotion_icon.get(emotion,'🎤')}
+                {emotion.upper()}**
+                """
+            )
+
+            st.progress(
+                probability
+            )
+
+            st.caption(
+                f"{probability:.2%}"
+            )
 
     # ==========================================
     # BAR CHART
@@ -861,12 +790,12 @@ with a1:
 
             coloraxis_showscale=False,
 
-            **create_dark_layout()
+            **dark_layout()
         )
 
         st.plotly_chart(
             fig_bar,
-            use_container_width=True
+            width="stretch"
         )
 
     # =====================================================
@@ -894,9 +823,9 @@ with a1:
 
                 values=prob_df["Probability"],
 
-                hole=0.65,
+                hole=0.70,
 
-                textinfo="label+percent"
+                textinfo="none"
             )
         ]
     )
@@ -912,43 +841,33 @@ with a1:
                 showarrow=False,
 
                 font=dict(
-                    size=22,
+                    size=24,
                     color="white"
                 )
             )
         ],
 
-        height=520,
+        height=380,
 
-        **create_dark_layout()
+        **dark_layout()
     )
 
     st.plotly_chart(
-
         fig_donut,
-
-        use_container_width=True
+        width="stretch"
     )
 
 # =====================================================
 # FOOTER
 # =====================================================
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-st.markdown("""
-<hr style="
-border:1px solid rgba(255,255,255,.08);
-">
-""",
-unsafe_allow_html=True)
+st.markdown("---")
 
 st.markdown("""
 <div style="
 text-align:center;
 padding:20px;
 color:#94a3b8;
-font-size:14px;
 ">
 
 🎤 Speech Emotion Recognition Dashboard
