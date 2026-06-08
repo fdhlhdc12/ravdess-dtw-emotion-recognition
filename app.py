@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import librosa
 import librosa.display
@@ -391,4 +390,3 @@ if uploaded_file is not None:
     )
 
     st.pyplot(fig_pie)
-```
