@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import librosa
 import librosa.display
@@ -12,9 +11,44 @@ import tensorflow as tf
 from feature_extraction_ml import extract_feature_ml
 from feature_extraction_dl import extract_feature_dl
 
-# =====================================================
+# ==================================================
+# PAGE CONFIG
+# ==================================================
+
+st.set_page_config(
+    page_title="Speech Emotion Recognition",
+    page_icon="🎤",
+    layout="wide"
+)
+
+# ==================================================
+# CUSTOM CSS
+# ==================================================
+
+st.markdown("""
+<style>
+
+.main {
+    background-color: #f8fafc;
+}
+
+[data-testid="stMetric"] {
+    background-color: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align:center;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ==================================================
 # LOAD MODELS
-# =====================================================
+# ==================================================
 
 knn_model = joblib.load(
     "model_knn.pkl"
@@ -36,57 +70,75 @@ cnn_lstm_model = tf.keras.models.load_model(
     "cnn_lstm_model.keras"
 )
 
-# =====================================================
-# PAGE CONFIG
-# =====================================================
+# ==================================================
+# EMOJI
+# ==================================================
 
-st.set_page_config(
-    page_title="Speech Emotion Recognition",
-    page_icon="🎤",
-    layout="wide"
-)
+emotion_icon = {
 
-st.title(
-    "🎤 Speech Emotion Recognition"
-)
+    "happy":"😊",
+    "sad":"😢",
+    "angry":"😠",
+    "fearful":"😨",
+    "calm":"😌",
+    "neutral":"😐",
+    "disgust":"🤢",
+    "surprised":"😲"
+}
 
-st.markdown(
-"""
-Comparison of:
-
-• KNN + GridSearchCV
-
-• SVM + GridSearchCV
-
-• CNN-LSTM
-"""
-)
-
-# =====================================================
+# ==================================================
 # SIDEBAR
-# =====================================================
+# ==================================================
 
 with st.sidebar:
 
-    st.header("Dataset")
+    st.header("📊 Dataset Information")
 
-    st.info(
-    """
-    RAVDESS Dataset
+    st.info("""
+    Dataset : RAVDESS
 
-    2880 Audio Files
+    🎭 24 Actors
 
-    8 Emotions
-    """
-    )
+    🎤 2880 Audio Files
 
-# =====================================================
-# FILE UPLOAD
-# =====================================================
+    😊 8 Emotions
+    """)
+
+    st.header("🤖 Models")
+
+    st.success("KNN + GridSearchCV")
+
+    st.success("SVM + GridSearchCV")
+
+    st.success("CNN-LSTM")
+
+# ==================================================
+# HEADER
+# ==================================================
+
+st.title(
+    "🎤 Speech Emotion Recognition System"
+)
+
+st.markdown("""
+### Human Emotion Detection from Speech
+
+Compare performance of:
+
+- 🤖 KNN + GridSearchCV
+- 🤖 SVM + GridSearchCV
+- 🧠 CNN-LSTM
+
+Dataset: RAVDESS
+""")
+
+# ==================================================
+# FILE UPLOADER
+# ==================================================
 
 uploaded_file = st.file_uploader(
 
-    "Upload Audio",
+    "Upload Audio File",
 
     type=[
         "wav",
@@ -97,9 +149,9 @@ uploaded_file = st.file_uploader(
     ]
 )
 
-# =====================================================
+# ==================================================
 # PROCESS
-# =====================================================
+# ==================================================
 
 if uploaded_file is not None:
 
@@ -116,6 +168,10 @@ if uploaded_file is not None:
 
         audio_path = tmp.name
 
+    # ==============================================
+    # LOAD AUDIO
+    # ==============================================
+
     y, sr = librosa.load(
         audio_path,
         sr=None
@@ -126,61 +182,12 @@ if uploaded_file is not None:
         sr=sr
     )
 
-    # ===================================
-    # WAVEFORM
-    # ===================================
-
-    col1,col2 = st.columns(2)
-
-    with col1:
-
-        st.subheader("Waveform")
-
-        fig, ax = plt.subplots()
-
-        librosa.display.waveshow(
-            y,
-            sr=sr,
-            ax=ax
-        )
-
-        st.pyplot(fig)
-
-    # ===================================
-    # SPECTROGRAM
-    # ===================================
-
-    with col2:
-
-        st.subheader("Spectrogram")
-
-        D = librosa.amplitude_to_db(
-            np.abs(
-                librosa.stft(y)
-            ),
-            ref=np.max
-        )
-
-        fig2, ax2 = plt.subplots()
-
-        img = librosa.display.specshow(
-            D,
-            sr=sr,
-            x_axis='time',
-            y_axis='hz',
-            ax=ax2
-        )
-
-        plt.colorbar(img)
-
-        st.pyplot(fig2)
-
-    # ===================================
+    # ==============================================
     # AUDIO INFO
-    # ===================================
+    # ==============================================
 
     st.subheader(
-        "Audio Information"
+        "📈 Audio Information"
     )
 
     c1,c2 = st.columns(2)
@@ -199,9 +206,65 @@ if uploaded_file is not None:
             sr
         )
 
-    # ===================================
-    # MACHINE LEARNING FEATURE
-    # ===================================
+    # ==============================================
+    # WAVEFORM + SPECTROGRAM
+    # ==============================================
+
+    col1,col2 = st.columns(2)
+
+    with col1:
+
+        st.subheader(
+            "🎵 Waveform"
+        )
+
+        fig_wave, ax_wave = plt.subplots()
+
+        librosa.display.waveshow(
+            y,
+            sr=sr,
+            ax=ax_wave
+        )
+
+        st.pyplot(fig_wave)
+
+    with col2:
+
+        st.subheader(
+            "📊 Spectrogram"
+        )
+
+        D = librosa.amplitude_to_db(
+
+            np.abs(
+                librosa.stft(y)
+            ),
+
+            ref=np.max
+        )
+
+        fig_spec, ax_spec = plt.subplots()
+
+        img = librosa.display.specshow(
+
+            D,
+
+            sr=sr,
+
+            x_axis='time',
+
+            y_axis='hz',
+
+            ax=ax_spec
+        )
+
+        plt.colorbar(img)
+
+        st.pyplot(fig_spec)
+
+    # ==============================================
+    # FEATURE ML
+    # ==============================================
 
     feature_ml = extract_feature_ml(
         audio_path
@@ -216,9 +279,9 @@ if uploaded_file is not None:
         feature_ml
     )
 
-    # ===================================
+    # ==============================================
     # KNN
-    # ===================================
+    # ==============================================
 
     pred_knn = knn_model.predict(
         feature_ml
@@ -228,9 +291,9 @@ if uploaded_file is not None:
         pred_knn
     )[0]
 
-    # ===================================
+    # ==============================================
     # SVM
-    # ===================================
+    # ==============================================
 
     pred_svm = svm_model.predict(
         feature_ml
@@ -248,9 +311,9 @@ if uploaded_file is not None:
         probs
     )
 
-    # ===================================
+    # ==============================================
     # CNN LSTM
-    # ===================================
+    # ==============================================
 
     feature_dl = extract_feature_dl(
         audio_path
@@ -275,52 +338,91 @@ if uploaded_file is not None:
         pred_cnn
     )[0]
 
-    # ===================================
-    # RESULTS
-    # ===================================
+    # ==============================================
+    # CONFIDENCE
+    # ==============================================
+
+    st.metric(
+        "Confidence Score",
+        f"{confidence:.2%}"
+    )
+
+    # ==============================================
+    # PREDICTIONS
+    # ==============================================
 
     st.subheader(
-        "Prediction Results"
+        "🤖 Prediction Results"
     )
 
     r1,r2,r3 = st.columns(3)
 
     with r1:
 
-        st.success(
-            f"KNN\n\n{emotion_knn.upper()}"
-        )
+        st.markdown(f"""
+        ### 🤖 KNN
+
+        # {emotion_icon[emotion_knn]}
+
+        ### {emotion_knn.upper()}
+        """)
 
     with r2:
 
-        st.success(
-            f"SVM\n\n{emotion_svm.upper()}"
-        )
+        st.markdown(f"""
+        ### 🤖 SVM
+
+        # {emotion_icon[emotion_svm]}
+
+        ### {emotion_svm.upper()}
+        """)
 
     with r3:
 
+        st.markdown(f"""
+        ### 🧠 CNN-LSTM
+
+        # {emotion_icon[emotion_cnn]}
+
+        ### {emotion_cnn.upper()}
+        """)
+
+    # ==============================================
+    # AGREEMENT
+    # ==============================================
+
+    if emotion_knn == emotion_svm:
+
         st.success(
-            f"CNN-LSTM\n\n{emotion_cnn.upper()}"
+            "✅ KNN and SVM agree"
         )
 
-    # ===================================
+    else:
+
+        st.warning(
+            "⚠ KNN and SVM produce different predictions"
+        )
+
+    # ==============================================
     # FINAL PREDICTION
-    # ===================================
+    # ==============================================
+
+    st.markdown("---")
 
     st.subheader(
-        "Final Prediction"
+        "🏆 Final Prediction"
     )
 
-    st.info(
-        f"{emotion_svm.upper()} ({confidence:.2%})"
+    st.success(
+        f"{emotion_icon[emotion_svm]} {emotion_svm.upper()} ({confidence:.2%})"
     )
 
-    # ===================================
-    # PROBABILITY
-    # ===================================
+    # ==============================================
+    # BAR CHART
+    # ==============================================
 
     st.subheader(
-        "SVM Probability"
+        "📊 Emotion Probability"
     )
 
     prob_df = pd.DataFrame({
@@ -337,4 +439,38 @@ if uploaded_file is not None:
             "Emotion"
         )
     )
-```
+
+    # ==============================================
+    # PIE CHART
+    # ==============================================
+
+    st.subheader(
+        "🥧 Emotion Distribution"
+    )
+
+    fig_pie, ax_pie = plt.subplots()
+
+    ax_pie.pie(
+
+        probs,
+
+        labels=encoder.classes_,
+
+        autopct="%1.1f%%"
+    )
+
+    st.pyplot(
+        fig_pie
+    )
+
+    # ==============================================
+    # FOOTER
+    # ==============================================
+
+    st.caption(
+        """
+        Speech Emotion Recognition using
+        MFCC + Delta + Delta² Features,
+        KNN, SVM and CNN-LSTM Models.
+        """
+    )
