@@ -20,61 +20,89 @@ st.set_page_config(
 )
 
 # ==================================================
-# DARK THEME CSS
+# DARK PREMIUM CSS
 # ==================================================
 
 st.markdown("""
 <style>
 
-.stApp {
-    background-color: #0f172a;
-    color: white;
+.stApp{
+    background-color:#0f172a;
 }
 
-section[data-testid="stSidebar"] {
-    background-color: #111827;
+/* sidebar */
+
+section[data-testid="stSidebar"]{
+    background-color:#111827;
 }
 
-.card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    border: 1px solid #334155;
+/* remove white containers */
+
+[data-testid="stMetric"]{
+    background-color:transparent;
+    border:none;
 }
 
-.pred-card {
-    background: #1e293b;
-    padding: 25px;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid #3b82f6;
+/* cards */
+
+.card{
+    background:#1e293b;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+    border:1px solid #334155;
 }
 
-.final-card {
-    background: #2563eb;
-    padding: 30px;
-    border-radius: 25px;
-    text-align: center;
-    color: white;
+.metric-card{
+    background:#1e293b;
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    border:1px solid #334155;
 }
 
-.metric-card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 20px;
-    text-align: center;
+.pred-card{
+    background:#1e293b;
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    border:1px solid #3b82f6;
 }
 
-h1,h2,h3,h4,p {
-    color: white;
+.final-card{
+    background:#2563eb;
+    border-radius:25px;
+    padding:30px;
+    text-align:center;
+}
+
+/* text */
+
+h1,h2,h3,h4,h5,h6,p,label{
+    color:white !important;
+}
+
+/* uploader */
+
+[data-testid="stFileUploader"]{
+    background:#1e293b;
+    border-radius:20px;
+    padding:20px;
+}
+
+/* audio player */
+
+[data-testid="stAudio"]{
+    background:#1e293b;
+    border-radius:15px;
+    padding:10px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # ==================================================
-# LOAD MODELS
+# LOAD MODEL
 # ==================================================
 
 knn_model = joblib.load("model_knn.pkl")
@@ -104,58 +132,129 @@ emotion_icon = {
 
 with st.sidebar:
 
-    try:
-        st.image(
-            "assets/logo_kampus.png",
-            width=180
-        )
-    except:
-        pass
+    st.image(
+        "assets/logo_kampus.png",
+        width=180
+    )
 
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
 
     st.markdown("""
-### 📊 Dataset
+    <div class='card'>
 
-**RAVDESS**
+    <h3>📊 Dataset</h3>
 
-🎭 24 Actors
+    <p>
+    RAVDESS
+    <br><br>
+    🎭 24 Actors
+    <br>
+    🎤 2880 Audio Files
+    <br>
+    😊 8 Emotions
+    </p>
 
-🎤 2880 Audio Files
-
-😊 8 Emotions
-""")
-
-    st.markdown("---")
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("""
-### 🤖 Models
+    <div class='card'>
 
-✅ KNN + GridSearchCV
+    <h3>🤖 Models</h3>
 
-✅ SVM + GridSearchCV
-""")
+    <p>
+    ✅ KNN + GridSearchCV
+    <br>
+    ✅ SVM + GridSearchCV
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==================================================
 # BANNER
 # ==================================================
 
-try:
-    st.image(
-        "assets/banner.png",
-        use_container_width=True
-    )
-except:
-    pass
+st.image(
+    "assets/banner.png",
+    use_container_width=True
+)
+
+# ==================================================
+# HERO CARD
+# ==================================================
+
+st.markdown("""
+<div class='card'>
+
+<h2>🎤 Speech Emotion Recognition System</h2>
+
+<p>
+Detect human emotions from speech using
+MFCC + Delta + Delta² features.
+</p>
+
+<hr>
+
+<p>
+
+🤖 KNN Accuracy : <b>87.15%</b>
+
+<br><br>
+
+🤖 SVM Accuracy : <b>90.28%</b>
+
+</p>
+
+</div>
+""", unsafe_allow_html=True)
+
+# ==================================================
+# DATASET SUMMARY
+# ==================================================
+
+c1,c2,c3,c4 = st.columns(4)
+
+with c1:
+    st.markdown("""
+    <div class='metric-card'>
+    <h4>Dataset</h4>
+    <h2>RAVDESS</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c2:
+    st.markdown("""
+    <div class='metric-card'>
+    <h4>Emotions</h4>
+    <h2>8</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c3:
+    st.markdown("""
+    <div class='metric-card'>
+    <h4>KNN</h4>
+    <h2>87.15%</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c4:
+    st.markdown("""
+    <div class='metric-card'>
+    <h4>SVM</h4>
+    <h2>90.28%</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==================================================
 # UPLOAD SECTION
 # ==================================================
 
 st.markdown("""
-<div class="card">
+<div class='card'>
 
-<h2>🎙 Upload Audio File</h2>
+<h2>🎙 Upload Audio</h2>
 
 <p>
 Supported formats:
@@ -167,226 +266,11 @@ WAV, MP3, M4A, OGG, FLAC
 
 uploaded_file = st.file_uploader(
     "",
-    type=["wav","mp3","m4a","ogg","flac"]
+    type=[
+        "wav",
+        "mp3",
+        "m4a",
+        "ogg",
+        "flac"
+    ]
 )
-
-# ==================================================
-# MAIN PROCESS
-# ==================================================
-
-if uploaded_file is not None:
-
-    st.audio(uploaded_file)
-
-    with tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=".wav"
-    ) as tmp:
-
-        tmp.write(uploaded_file.read())
-        audio_path = tmp.name
-
-    y, sr = librosa.load(
-        audio_path,
-        sr=None
-    )
-
-    duration = librosa.get_duration(
-        y=y,
-        sr=sr
-    )
-
-    feature = extract_feature_ml(
-        audio_path
-    )
-
-    feature = feature.reshape(
-        1,
-        -1
-    )
-
-    feature = scaler.transform(
-        feature
-    )
-
-    pred_knn = knn_model.predict(
-        feature
-    )
-
-    pred_svm = svm_model.predict(
-        feature
-    )
-
-    emotion_knn = encoder.inverse_transform(
-        pred_knn
-    )[0]
-
-    emotion_svm = encoder.inverse_transform(
-        pred_svm
-    )[0]
-
-    probs = svm_model.predict_proba(
-        feature
-    )[0]
-
-    confidence = np.max(
-        probs
-    )
-
-    # =====================================
-    # METRICS
-    # =====================================
-
-    c1,c2,c3 = st.columns(3)
-
-    with c1:
-        st.metric(
-            "Duration",
-            f"{duration:.2f}s"
-        )
-
-    with c2:
-        st.metric(
-            "Sample Rate",
-            sr
-        )
-
-    with c3:
-        st.metric(
-            "Confidence",
-            f"{confidence:.2%}"
-        )
-
-    # =====================================
-    # WAVEFORM & SPECTROGRAM
-    # =====================================
-
-    col1,col2 = st.columns(2)
-
-    with col1:
-
-        st.subheader("🎵 Waveform")
-
-        fig_wave, ax_wave = plt.subplots()
-
-        librosa.display.waveshow(
-            y,
-            sr=sr,
-            ax=ax_wave
-        )
-
-        st.pyplot(fig_wave)
-
-    with col2:
-
-        st.subheader("📊 Spectrogram")
-
-        D = librosa.amplitude_to_db(
-            np.abs(
-                librosa.stft(y)
-            ),
-            ref=np.max
-        )
-
-        fig_spec, ax_spec = plt.subplots()
-
-        img = librosa.display.specshow(
-            D,
-            sr=sr,
-            x_axis="time",
-            y_axis="hz",
-            ax=ax_spec
-        )
-
-        plt.colorbar(img)
-
-        st.pyplot(fig_spec)
-
-    # =====================================
-    # PREDICTIONS
-    # =====================================
-
-    st.subheader("🤖 Model Predictions")
-
-    r1,r2 = st.columns(2)
-
-    with r1:
-
-        st.markdown(f"""
-<div class="pred-card">
-
-<h3>🤖 KNN</h3>
-
-<h1>{emotion_icon.get(emotion_knn,'🎤')}</h1>
-
-<h2>{emotion_knn.upper()}</h2>
-
-</div>
-""", unsafe_allow_html=True)
-
-    with r2:
-
-        st.markdown(f"""
-<div class="pred-card">
-
-<h3>🤖 SVM</h3>
-
-<h1>{emotion_icon.get(emotion_svm,'🎤')}</h1>
-
-<h2>{emotion_svm.upper()}</h2>
-
-</div>
-""", unsafe_allow_html=True)
-
-    # =====================================
-    # FINAL PREDICTION
-    # =====================================
-
-    st.markdown("---")
-
-    st.markdown(f"""
-<div class="final-card">
-
-<h2>🏆 FINAL PREDICTION</h2>
-
-<h1>{emotion_icon.get(emotion_svm,'🎤')}</h1>
-
-<h1>{emotion_svm.upper()}</h1>
-
-<h3>Confidence: {confidence:.2%}</h3>
-
-</div>
-""", unsafe_allow_html=True)
-
-    # =====================================
-    # BAR CHART
-    # =====================================
-
-    st.subheader("📊 Emotion Probability")
-
-    prob_df = pd.DataFrame({
-        "Emotion": encoder.classes_,
-        "Probability": probs
-    })
-
-    st.bar_chart(
-        prob_df.set_index("Emotion")
-    )
-
-    # =====================================
-    # PIE CHART
-    # =====================================
-
-    st.subheader("🥧 Emotion Distribution")
-
-    fig_pie, ax_pie = plt.subplots(
-        figsize=(6,6)
-    )
-
-    ax_pie.pie(
-        probs,
-        labels=encoder.classes_,
-        autopct="%1.1f%%"
-    )
-
-    st.pyplot(fig_pie)
