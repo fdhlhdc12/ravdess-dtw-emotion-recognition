@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 import librosa
 import librosa.display
@@ -20,20 +21,54 @@ st.set_page_config(
 )
 
 # ==================================================
-# CUSTOM CSS
+# DARK THEME CSS
 # ==================================================
 
 st.markdown("""
 <style>
 
-[data-testid="stMetric"] {
-    background-color: white;
-    padding: 15px;
-    border-radius: 12px;
+.stApp {
+    background-color: #0f172a;
+    color: white;
 }
 
-h1 {
-    text-align:center;
+section[data-testid="stSidebar"] {
+    background-color: #111827;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #334155;
+}
+
+.pred-card {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    border: 1px solid #3b82f6;
+}
+
+.final-card {
+    background: #2563eb;
+    padding: 30px;
+    border-radius: 25px;
+    text-align: center;
+    color: white;
+}
+
+.metric-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+h1,h2,h3,h4,p {
+    color: white;
 }
 
 </style>
@@ -50,11 +85,10 @@ encoder = joblib.load("label_encoder.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # ==================================================
-# EMOJI
+# EMOTION ICON
 # ==================================================
 
 emotion_icon = {
-
     "happy":"😊",
     "sad":"😢",
     "angry":"😠",
@@ -74,72 +108,67 @@ with st.sidebar:
     try:
         st.image(
             "assets/logo_kampus.png",
-            width=150
+            width=180
         )
     except:
         pass
 
-    st.header("📊 Dataset Information")
+    st.markdown("---")
 
-    st.info("""
-Dataset : RAVDESS
+    st.markdown("""
+### 📊 Dataset
+
+**RAVDESS**
 
 🎭 24 Actors
+
 🎤 2880 Audio Files
+
 😊 8 Emotions
 """)
 
-    st.header("🤖 Models")
+    st.markdown("---")
 
-    st.success("KNN + GridSearchCV")
-    st.success("SVM + GridSearchCV")
+    st.markdown("""
+### 🤖 Models
+
+✅ KNN + GridSearchCV
+
+✅ SVM + GridSearchCV
+""")
 
 # ==================================================
 # BANNER
 # ==================================================
 
 try:
-
     st.image(
         "assets/banner.png",
         use_container_width=True
     )
-
 except:
     pass
 
 # ==================================================
-# HEADER
+# UPLOAD SECTION
 # ==================================================
-
-st.title(
-    "🎤 Speech Emotion Recognition System"
-)
 
 st.markdown("""
-### Human Emotion Detection from Speech
+<div class="card">
 
-Models Used:
+<h2>🎙 Upload Audio File</h2>
 
-- 🤖 KNN + GridSearchCV
-- 🤖 SVM + GridSearchCV
+<p>
+Supported formats:
+WAV, MP3, M4A, OGG, FLAC
+</p>
 
-Dataset: RAVDESS
-""")
-
-# ==================================================
-# FILE UPLOAD
-# ==================================================
+</div>
+""", unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
-    "Upload Audio File",
-    type=[
-        "wav",
-        "mp3",
-        "m4a",
-        "ogg",
-        "flac"
-    ]
+    "",
+    type=["wav","mp3","m4a","ogg","flac"]
 )
 
 # ==================================================
@@ -155,15 +184,8 @@ if uploaded_file is not None:
         suffix=".wav"
     ) as tmp:
 
-        tmp.write(
-            uploaded_file.read()
-        )
-
+        tmp.write(uploaded_file.read())
         audio_path = tmp.name
-
-    # ======================================
-    # LOAD AUDIO
-    # ======================================
 
     y, sr = librosa.load(
         audio_path,
@@ -175,41 +197,76 @@ if uploaded_file is not None:
         sr=sr
     )
 
-    # ======================================
-    # AUDIO INFO
-    # ======================================
-
-    st.subheader(
-        "📈 Audio Information"
+    feature = extract_feature_ml(
+        audio_path
     )
 
-    c1, c2 = st.columns(2)
+    feature = feature.reshape(
+        1,
+        -1
+    )
+
+    feature = scaler.transform(
+        feature
+    )
+
+    pred_knn = knn_model.predict(
+        feature
+    )
+
+    pred_svm = svm_model.predict(
+        feature
+    )
+
+    emotion_knn = encoder.inverse_transform(
+        pred_knn
+    )[0]
+
+    emotion_svm = encoder.inverse_transform(
+        pred_svm
+    )[0]
+
+    probs = svm_model.predict_proba(
+        feature
+    )[0]
+
+    confidence = np.max(
+        probs
+    )
+
+    # =====================================
+    # METRICS
+    # =====================================
+
+    c1,c2,c3 = st.columns(3)
 
     with c1:
-
         st.metric(
             "Duration",
-            f"{duration:.2f} sec"
+            f"{duration:.2f}s"
         )
 
     with c2:
-
         st.metric(
             "Sample Rate",
             sr
         )
 
-    # ======================================
-    # VISUALIZATION
-    # ======================================
+    with c3:
+        st.metric(
+            "Confidence",
+            f"{confidence:.2%}"
+        )
 
-    col1, col2 = st.columns(2)
+    # =====================================
+    # WAVEFORM & SPECTROGRAM
+    # =====================================
+
+    col1,col2 = st.columns(2)
 
     with col1:
 
-        st.subheader(
-            "🎵 Waveform"
-        )
+        st.subheader("🎵 Waveform")
 
         fig_wave, ax_wave = plt.subplots()
 
@@ -223,9 +280,7 @@ if uploaded_file is not None:
 
     with col2:
 
-        st.subheader(
-            "📊 Spectrogram"
-        )
+        st.subheader("📊 Spectrogram")
 
         D = librosa.amplitude_to_db(
             np.abs(
@@ -248,161 +303,82 @@ if uploaded_file is not None:
 
         st.pyplot(fig_spec)
 
-    # ======================================
-    # FEATURE EXTRACTION
-    # ======================================
+    # =====================================
+    # PREDICTIONS
+    # =====================================
 
-    feature = extract_feature_ml(
-        audio_path
-    )
+    st.subheader("🤖 Model Predictions")
 
-    feature = feature.reshape(
-        1,
-        -1
-    )
-
-    feature = scaler.transform(
-        feature
-    )
-
-    # ======================================
-    # KNN
-    # ======================================
-
-    pred_knn = knn_model.predict(
-        feature
-    )
-
-    emotion_knn = encoder.inverse_transform(
-        pred_knn
-    )[0]
-
-    # ======================================
-    # SVM
-    # ======================================
-
-    pred_svm = svm_model.predict(
-        feature
-    )
-
-    emotion_svm = encoder.inverse_transform(
-        pred_svm
-    )[0]
-
-    probs = svm_model.predict_proba(
-        feature
-    )[0]
-
-    confidence = np.max(
-        probs
-    )
-
-    # ======================================
-    # WARNING
-    # ======================================
-
-    if confidence < 0.50:
-
-        st.warning(
-            "Low confidence prediction. Audio may differ from training data."
-        )
-
-    # ======================================
-    # CONFIDENCE
-    # ======================================
-
-    st.metric(
-        "Confidence Score",
-        f"{confidence:.2%}"
-    )
-
-    # ======================================
-    # RESULTS
-    # ======================================
-
-    st.subheader(
-        "🤖 Prediction Results"
-    )
-
-    r1, r2 = st.columns(2)
+    r1,r2 = st.columns(2)
 
     with r1:
 
         st.markdown(f"""
-### 🤖 KNN
+<div class="pred-card">
 
-# {emotion_icon[emotion_knn]}
+<h3>🤖 KNN</h3>
 
-### {emotion_knn.upper()}
-""")
+<h1>{emotion_icon.get(emotion_knn,'🎤')}</h1>
+
+<h2>{emotion_knn.upper()}</h2>
+
+</div>
+""", unsafe_allow_html=True)
 
     with r2:
 
         st.markdown(f"""
-### 🤖 SVM
+<div class="pred-card">
 
-# {emotion_icon[emotion_svm]}
+<h3>🤖 SVM</h3>
 
-### {emotion_svm.upper()}
-""")
+<h1>{emotion_icon.get(emotion_svm,'🎤')}</h1>
 
-    # ======================================
-    # AGREEMENT
-    # ======================================
+<h2>{emotion_svm.upper()}</h2>
 
-    if emotion_knn == emotion_svm:
+</div>
+""", unsafe_allow_html=True)
 
-        st.success(
-            "✅ KNN and SVM agree"
-        )
-
-    else:
-
-        st.warning(
-            "⚠️ KNN and SVM produce different predictions"
-        )
-
-    # ======================================
+    # =====================================
     # FINAL PREDICTION
-    # ======================================
+    # =====================================
 
     st.markdown("---")
 
-    st.subheader(
-        "🏆 Final Prediction"
-    )
+    st.markdown(f"""
+<div class="final-card">
 
-    st.success(
-        f"{emotion_icon[emotion_svm]} {emotion_svm.upper()} ({confidence:.2%})"
-    )
+<h2>🏆 FINAL PREDICTION</h2>
 
-    # ======================================
+<h1>{emotion_icon.get(emotion_svm,'🎤')}</h1>
+
+<h1>{emotion_svm.upper()}</h1>
+
+<h3>Confidence: {confidence:.2%}</h3>
+
+</div>
+""", unsafe_allow_html=True)
+
+    # =====================================
     # BAR CHART
-    # ======================================
+    # =====================================
 
-    st.subheader(
-        "📊 Emotion Probability"
-    )
+    st.subheader("📊 Emotion Probability")
 
     prob_df = pd.DataFrame({
-
         "Emotion": encoder.classes_,
         "Probability": probs
     })
 
     st.bar_chart(
-        prob_df.set_index(
-            "Emotion"
-        )
+        prob_df.set_index("Emotion")
     )
 
-    # ======================================
+    # =====================================
     # PIE CHART
-    # ======================================
+    # =====================================
 
-    st.subheader(
-        "🥧 Emotion Distribution"
-    )
+    st.subheader("🥧 Emotion Distribution")
 
     fig_pie, ax_pie = plt.subplots(
         figsize=(6,6)
@@ -414,24 +390,5 @@ if uploaded_file is not None:
         autopct="%1.1f%%"
     )
 
-    st.pyplot(
-        fig_pie
-    )
-
-# ==================================================
-# FOOTER
-# ==================================================
-
-st.caption("""
-Speech Emotion Recognition System
-
-Feature Extraction:
-MFCC + Delta + Delta²
-
-Classification:
-KNN + GridSearchCV
-SVM + GridSearchCV
-
-Dataset:
-RAVDESS
-""")
+    st.pyplot(fig_pie)
+```
