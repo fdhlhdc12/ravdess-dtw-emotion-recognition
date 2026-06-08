@@ -3,7 +3,7 @@ numpy
 pandas
 librosa
 matplotlib
-scikit-learn==1.6.1
+scikit-learn
 joblib
 soundfile
 audioread
