@@ -26,15 +26,10 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-.main {
-    background-color: #f8fafc;
-}
-
 [data-testid="stMetric"] {
     background-color: white;
     padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+    border-radius: 12px;
 }
 
 h1 {
@@ -48,21 +43,11 @@ h1 {
 # LOAD MODELS
 # ==================================================
 
-knn_model = joblib.load(
-    "model_knn.pkl"
-)
+knn_model = joblib.load("model_knn.pkl")
+svm_model = joblib.load("model_svm.pkl")
 
-svm_model = joblib.load(
-    "model_svm.pkl"
-)
-
-encoder = joblib.load(
-    "label_encoder.pkl"
-)
-
-scaler = joblib.load(
-    "scaler.pkl"
-)
+encoder = joblib.load("label_encoder.pkl")
+scaler = joblib.load("scaler.pkl")
 
 # ==================================================
 # EMOJI
@@ -97,19 +82,16 @@ with st.sidebar:
     st.header("📊 Dataset Information")
 
     st.info("""
-    Dataset : RAVDESS
+Dataset : RAVDESS
 
-    🎭 24 Actors
-
-    🎤 2880 Audio Files
-
-    😊 8 Emotions
-    """)
+🎭 24 Actors
+🎤 2880 Audio Files
+😊 8 Emotions
+""")
 
     st.header("🤖 Models")
 
     st.success("KNN + GridSearchCV")
-
     st.success("SVM + GridSearchCV")
 
 # ==================================================
@@ -150,9 +132,7 @@ Dataset: RAVDESS
 # ==================================================
 
 uploaded_file = st.file_uploader(
-
     "Upload Audio File",
-
     type=[
         "wav",
         "mp3",
@@ -181,9 +161,9 @@ if uploaded_file is not None:
 
         audio_path = tmp.name
 
-    # ==========================================
+    # ======================================
     # LOAD AUDIO
-    # ==========================================
+    # ======================================
 
     y, sr = librosa.load(
         audio_path,
@@ -195,9 +175,9 @@ if uploaded_file is not None:
         sr=sr
     )
 
-    # ==========================================
-    # AUDIO INFORMATION
-    # ==========================================
+    # ======================================
+    # AUDIO INFO
+    # ======================================
 
     st.subheader(
         "📈 Audio Information"
@@ -219,9 +199,9 @@ if uploaded_file is not None:
             sr
         )
 
-    # ==========================================
+    # ======================================
     # VISUALIZATION
-    # ==========================================
+    # ======================================
 
     col1, col2 = st.columns(2)
 
@@ -239,9 +219,7 @@ if uploaded_file is not None:
             ax=ax_wave
         )
 
-        st.pyplot(
-            fig_wave
-        )
+        st.pyplot(fig_wave)
 
     with col2:
 
@@ -250,38 +228,29 @@ if uploaded_file is not None:
         )
 
         D = librosa.amplitude_to_db(
-
             np.abs(
                 librosa.stft(y)
             ),
-
             ref=np.max
         )
 
         fig_spec, ax_spec = plt.subplots()
 
         img = librosa.display.specshow(
-
             D,
-
             sr=sr,
-
             x_axis="time",
-
             y_axis="hz",
-
             ax=ax_spec
         )
 
         plt.colorbar(img)
 
-        st.pyplot(
-            fig_spec
-        )
+        st.pyplot(fig_spec)
 
-    # ==========================================
+    # ======================================
     # FEATURE EXTRACTION
-    # ==========================================
+    # ======================================
 
     feature = extract_feature_ml(
         audio_path
@@ -296,9 +265,9 @@ if uploaded_file is not None:
         feature
     )
 
-    # ==========================================
+    # ======================================
     # KNN
-    # ==========================================
+    # ======================================
 
     pred_knn = knn_model.predict(
         feature
@@ -308,9 +277,9 @@ if uploaded_file is not None:
         pred_knn
     )[0]
 
-    # ==========================================
+    # ======================================
     # SVM
-    # ==========================================
+    # ======================================
 
     pred_svm = svm_model.predict(
         feature
@@ -324,25 +293,32 @@ if uploaded_file is not None:
         feature
     )[0]
 
-    confidence = np.max(probs)
-    if confidence < 0.50:
-
-    st.warning(
-        "Low confidence prediction. Audio may differ from training data."
+    confidence = np.max(
+        probs
     )
 
-    # ==========================================
+    # ======================================
+    # WARNING
+    # ======================================
+
+    if confidence < 0.50:
+
+        st.warning(
+            "Low confidence prediction. Audio may differ from training data."
+        )
+
+    # ======================================
     # CONFIDENCE
-    # ==========================================
+    # ======================================
 
     st.metric(
         "Confidence Score",
         f"{confidence:.2%}"
     )
 
-    # ==========================================
+    # ======================================
     # RESULTS
-    # ==========================================
+    # ======================================
 
     st.subheader(
         "🤖 Prediction Results"
@@ -353,26 +329,26 @@ if uploaded_file is not None:
     with r1:
 
         st.markdown(f"""
-        ### 🤖 KNN
+### 🤖 KNN
 
-        # {emotion_icon[emotion_knn]}
+# {emotion_icon[emotion_knn]}
 
-        ### {emotion_knn.upper()}
-        """)
+### {emotion_knn.upper()}
+""")
 
     with r2:
 
         st.markdown(f"""
-        ### 🤖 SVM
+### 🤖 SVM
 
-        # {emotion_icon[emotion_svm]}
+# {emotion_icon[emotion_svm]}
 
-        ### {emotion_svm.upper()}
-        """)
+### {emotion_svm.upper()}
+""")
 
-    # ==========================================
+    # ======================================
     # AGREEMENT
-    # ==========================================
+    # ======================================
 
     if emotion_knn == emotion_svm:
 
@@ -383,12 +359,12 @@ if uploaded_file is not None:
     else:
 
         st.warning(
-            "⚠ KNN and SVM produce different predictions"
+            "⚠️ KNN and SVM produce different predictions"
         )
 
-    # ==========================================
+    # ======================================
     # FINAL PREDICTION
-    # ==========================================
+    # ======================================
 
     st.markdown("---")
 
@@ -400,9 +376,9 @@ if uploaded_file is not None:
         f"{emotion_icon[emotion_svm]} {emotion_svm.upper()} ({confidence:.2%})"
     )
 
-    # ==========================================
-    # PROBABILITY BAR CHART
-    # ==========================================
+    # ======================================
+    # BAR CHART
+    # ======================================
 
     st.subheader(
         "📊 Emotion Probability"
@@ -410,11 +386,8 @@ if uploaded_file is not None:
 
     prob_df = pd.DataFrame({
 
-        "Emotion":
-        encoder.classes_,
-
-        "Probability":
-        probs
+        "Emotion": encoder.classes_,
+        "Probability": probs
     })
 
     st.bar_chart(
@@ -423,19 +396,23 @@ if uploaded_file is not None:
         )
     )
 
-    # ==========================================
+    # ======================================
     # PIE CHART
-    # ==========================================
+    # ======================================
 
     st.subheader(
         "🥧 Emotion Distribution"
     )
 
-    fig_pie, ax_pie = plt.subplots()
-
     fig_pie, ax_pie = plt.subplots(
-    figsize=(6,6)
-)
+        figsize=(6,6)
+    )
+
+    ax_pie.pie(
+        probs,
+        labels=encoder.classes_,
+        autopct="%1.1f%%"
+    )
 
     st.pyplot(
         fig_pie
@@ -445,18 +422,16 @@ if uploaded_file is not None:
 # FOOTER
 # ==================================================
 
-st.caption(
-"""
+st.caption("""
 Speech Emotion Recognition System
 
 Feature Extraction:
 MFCC + Delta + Delta²
 
-Classification Models:
+Classification:
 KNN + GridSearchCV
 SVM + GridSearchCV
 
 Dataset:
 RAVDESS
-"""
-)
+""")
