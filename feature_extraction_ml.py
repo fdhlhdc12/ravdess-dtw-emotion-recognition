@@ -1,7 +1,7 @@
 import librosa
 import numpy as np
 
-def extract_feature(file_path):
+def extract_feature_ml(file_path):
 
     y, sr = librosa.load(
         file_path,
