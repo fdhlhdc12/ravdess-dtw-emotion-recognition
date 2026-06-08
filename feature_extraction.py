@@ -14,9 +14,34 @@ def extract_feature(file_path):
         n_mfcc=40
     )
 
-    feature = np.mean(
+    delta = librosa.feature.delta(
+        mfcc
+    )
+
+    delta2 = librosa.feature.delta(
+        mfcc,
+        order=2
+    )
+
+    mfcc_mean = np.mean(
         mfcc.T,
         axis=0
     )
+
+    delta_mean = np.mean(
+        delta.T,
+        axis=0
+    )
+
+    delta2_mean = np.mean(
+        delta2.T,
+        axis=0
+    )
+
+    feature = np.hstack([
+        mfcc_mean,
+        delta_mean,
+        delta2_mean
+    ])
 
     return feature
