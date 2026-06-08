@@ -324,8 +324,11 @@ if uploaded_file is not None:
         feature
     )[0]
 
-    confidence = np.max(
-        probs
+    confidence = np.max(probs)
+    if confidence < 0.50:
+
+    st.warning(
+        "Low confidence prediction. Audio may differ from training data."
     )
 
     # ==========================================
@@ -430,14 +433,9 @@ if uploaded_file is not None:
 
     fig_pie, ax_pie = plt.subplots()
 
-    ax_pie.pie(
-
-        probs,
-
-        labels=encoder.classes_,
-
-        autopct="%1.1f%%"
-    )
+    fig_pie, ax_pie = plt.subplots(
+    figsize=(6,6)
+)
 
     st.pyplot(
         fig_pie
@@ -448,9 +446,17 @@ if uploaded_file is not None:
 # ==================================================
 
 st.caption(
-    """
-    Speech Emotion Recognition using
-    MFCC + Delta + Delta² Features,
-    KNN and SVM Models.
-    """
+"""
+Speech Emotion Recognition System
+
+Feature Extraction:
+MFCC + Delta + Delta²
+
+Classification Models:
+KNN + GridSearchCV
+SVM + GridSearchCV
+
+Dataset:
+RAVDESS
+"""
 )
