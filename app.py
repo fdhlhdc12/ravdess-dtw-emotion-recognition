@@ -9,67 +9,132 @@ import joblib
 
 from feature_extraction_ml import extract_feature_ml
 
-knn_model = joblib.load("model_knn.pkl")
-svm_model = joblib.load("model_svm.pkl")
+# ==================================================
+# PAGE CONFIG
+# ==================================================
 
-encoder = joblib.load("label_encoder.pkl")
-scaler = joblib.load("scaler.pkl")
+st.set_page_config(
+    page_title="Speech Emotion Recognition",
+    page_icon="🎤",
+    layout="wide"
+)
+
+# ==================================================
+# CUSTOM CSS
+# ==================================================
+
+st.markdown("""
+<style>
+
+.stApp {
+    background-color: #0f172a;
+}
+
+.card {
+    background-color: #1e293b;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.final-card {
+    background-color: #2563eb;
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+}
+
+h1,h2,h3,h4,p {
+    color: white;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ==================================================
+# LOAD MODEL
+# ==================================================
+
+@st.cache_resource
+def load_models():
+    knn = joblib.load("model_knn.pkl")
+    svm = joblib.load("model_svm.pkl")
+    encoder = joblib.load("label_encoder.pkl")
+    scaler = joblib.load("scaler.pkl")
+
+    return knn, svm, encoder, scaler
+
+
+knn_model, svm_model, encoder, scaler = load_models()
+
+# ==================================================
+# EMOTION ICON
+# ==================================================
+
+emotion_icon = {
+    "angry": "😠",
+    "calm": "😌",
+    "disgust": "🤢",
+    "fearful": "😨",
+    "happy": "😊",
+    "neutral": "😐",
+    "sad": "😢",
+    "surprised": "😲"
+}
+
+# ==================================================
+# SIDEBAR
+# ==================================================
 
 with st.sidebar:
 
-    st.image(
-        "assets/logo_kampus.png",
-        width=180
-    )
-
-    st.markdown("""
-    ### 📊 Dataset
-
-    RAVDESS
-
-    🎭 24 Actors
-
-    🎤 2880 Audio Files
-
-    😊 8 Emotions
-    """)
+    st.title("🎤 SER App")
 
     st.markdown("---")
 
     st.markdown("""
-    ### 🤖 Models
+### Dataset
 
-    ✅ KNN + GridSearchCV
+RAVDESS Dataset
 
-    ✅ SVM + GridSearchCV
-    """)
-
-st.image(
-    "assets/banner.png",
-    width="stretch"
-)
-
-st.markdown("""
-### 🎤 Speech Emotion Recognition
-
-Detect human emotions from speech using
-MFCC + Delta + Delta² Features.
-
-KNN Accuracy : 87.15%
-
-SVM Accuracy : 90.28%
+- 24 Actors
+- 2880 Audio Files
+- 8 Emotions
 """)
 
+    st.markdown("---")
+
+    st.markdown("""
+### Models
+
+- KNN + GridSearchCV
+- SVM + GridSearchCV
+""")
+
+# ==================================================
+# HEADER
+# ==================================================
+
+st.title("🎤 Speech Emotion Recognition")
+
+st.markdown("""
+Upload audio suara dan sistem akan memprediksi emosi menggunakan
+model Machine Learning.
+""")
+
+# ==================================================
+# FILE UPLOAD
+# ==================================================
+
 uploaded_file = st.file_uploader(
-    "Upload Audio File",
-    type=[
-        "wav",
-        "mp3",
-        "m4a",
-        "ogg",
-        "flac"
-    ]
+    "Upload Audio",
+    type=["wav", "mp3", "ogg", "m4a", "flac"]
 )
+
+# ==================================================
+# PROCESS
+# ==================================================
 
 if uploaded_file is not None:
 
@@ -80,82 +145,88 @@ if uploaded_file is not None:
         suffix=".wav"
     ) as tmp:
 
-        tmp.write(
-            uploaded_file.read()
-        )
-
+        tmp.write(uploaded_file.read())
         audio_path = tmp.name
 
-    y, sr = librosa.load(
-        audio_path,
-        sr=None
-    )
+    with st.spinner("Analyzing audio..."):
 
-    duration = librosa.get_duration(
-        y=y,
-        sr=sr
-    )
+        # ==========================================
+        # LOAD AUDIO
+        # ==========================================
 
-    feature = extract_feature_ml(
-        audio_path
-    )
+        y, sr = librosa.load(
+            audio_path,
+            sr=None
+        )
 
-    feature = feature.reshape(
-        1,
-        -1
-    )
+        duration = librosa.get_duration(
+            y=y,
+            sr=sr
+        )
 
-    feature = scaler.transform(
-        feature
-    )
+        # ==========================================
+        # FEATURE EXTRACTION
+        # ==========================================
 
-    pred_knn = knn_model.predict(
-        feature
-    )
+        feature = extract_feature_ml(audio_path)
 
-    pred_svm = svm_model.predict(
-        feature
-    )
+        feature = feature.reshape(1, -1)
 
-    emotion_knn = encoder.inverse_transform(
-        pred_knn
-    )[0]
+        feature = scaler.transform(feature)
 
-    emotion_svm = encoder.inverse_transform(
-        pred_svm
-    )[0]
+        # ==========================================
+        # PREDICTION
+        # ==========================================
 
-    probs = svm_model.predict_proba(
-        feature
-    )[0]
+        pred_knn = knn_model.predict(feature)
 
-    confidence = np.max(
-        probs
-    )
+        pred_svm = svm_model.predict(feature)
 
-    c1, c2, c3 = st.columns(3)
+        emotion_knn = encoder.inverse_transform(pred_knn)[0]
+        emotion_svm = encoder.inverse_transform(pred_svm)[0]
 
-    c1.metric(
-        "Duration",
-        f"{duration:.2f} sec"
-    )
+        probs = svm_model.predict_proba(feature)[0]
 
-    c2.metric(
-        "Sample Rate",
-        sr
-    )
+        confidence = np.max(probs)
 
-    c3.metric(
-        "Confidence",
-        f"{confidence:.2%}"
-    )
+    # ==================================================
+    # METRICS
+    # ==================================================
+
+    st.subheader("📈 Audio Information")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Duration",
+            f"{duration:.2f} sec"
+        )
+
+    with col2:
+        st.metric(
+            "Sample Rate",
+            sr
+        )
+
+    with col3:
+        st.metric(
+            "Confidence",
+            f"{confidence:.2%}"
+        )
+
+    # ==================================================
+    # VISUALIZATION
+    # ==================================================
+
+    st.subheader("📊 Audio Visualization")
 
     col1, col2 = st.columns(2)
 
     with col1:
 
         fig_wave, ax_wave = plt.subplots(
-            figsize=(6,3)
+            figsize=(8, 3)
         )
 
         librosa.display.waveshow(
@@ -164,24 +235,22 @@ if uploaded_file is not None:
             ax=ax_wave
         )
 
-        st.pyplot(
-            fig_wave
-        )
+        ax_wave.set_title("Waveform")
+
+        st.pyplot(fig_wave)
 
     with col2:
 
         D = librosa.amplitude_to_db(
-            np.abs(
-                librosa.stft(y)
-            ),
+            np.abs(librosa.stft(y)),
             ref=np.max
         )
 
         fig_spec, ax_spec = plt.subplots(
-            figsize=(6,3)
+            figsize=(8, 3)
         )
 
-        librosa.display.specshow(
+        img = librosa.display.specshow(
             D,
             sr=sr,
             x_axis="time",
@@ -189,48 +258,102 @@ if uploaded_file is not None:
             ax=ax_spec
         )
 
-        st.pyplot(
-            fig_spec
+        plt.colorbar(img)
+
+        ax_spec.set_title("Spectrogram")
+
+        st.pyplot(fig_spec)
+
+    # ==================================================
+    # MODEL PREDICTION
+    # ==================================================
+
+    st.subheader("🤖 Model Prediction")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.info(
+            f"KNN Prediction : "
+            f"{emotion_icon.get(emotion_knn,'🎤')} "
+            f"{emotion_knn.upper()}"
         )
 
-    r1, r2 = st.columns(2)
+    with col2:
 
-    with r1:
         st.success(
-            f"KNN : {emotion_knn.upper()}"
+            f"SVM Prediction : "
+            f"{emotion_icon.get(emotion_svm,'🎤')} "
+            f"{emotion_svm.upper()}"
         )
 
-    with r2:
-        st.success(
-            f"SVM : {emotion_svm.upper()}"
-        )
+    # ==================================================
+    # FINAL RESULT
+    # ==================================================
 
-    st.subheader(
-        "🏆 Final Prediction"
+    st.markdown(
+        f"""
+<div class="final-card">
+
+<h2>Final Prediction</h2>
+
+<h1>
+{emotion_icon.get(emotion_svm,'🎤')}
+</h1>
+
+<h1>
+{emotion_svm.upper()}
+</h1>
+
+<h3>
+Confidence: {confidence:.2%}
+</h3>
+
+</div>
+        """,
+        unsafe_allow_html=True
     )
 
-    st.info(
-        emotion_svm.upper()
-    )
+    # ==================================================
+    # PROBABILITY TABLE
+    # ==================================================
+
+    st.subheader("📋 Emotion Probability")
 
     prob_df = pd.DataFrame({
-
-        "Emotion":
-        encoder.classes_,
-
-        "Probability":
-        probs
-
+        "Emotion": encoder.classes_,
+        "Probability": probs
     })
 
-    st.bar_chart(
-        prob_df.set_index(
-            "Emotion"
-        )
+    prob_df = prob_df.sort_values(
+        by="Probability",
+        ascending=False
     )
 
+    st.dataframe(
+        prob_df,
+        use_container_width=True
+    )
+
+    # ==================================================
+    # BAR CHART
+    # ==================================================
+
+    st.subheader("📊 Probability Chart")
+
+    st.bar_chart(
+        prob_df.set_index("Emotion")
+    )
+
+    # ==================================================
+    # PIE CHART
+    # ==================================================
+
+    st.subheader("🥧 Emotion Distribution")
+
     fig_pie, ax_pie = plt.subplots(
-        figsize=(4,4)
+        figsize=(5, 5)
     )
 
     ax_pie.pie(
@@ -239,6 +362,8 @@ if uploaded_file is not None:
         autopct="%1.1f%%"
     )
 
-    st.pyplot(
-        fig_pie
+    ax_pie.set_title(
+        "Emotion Distribution"
     )
+
+    st.pyplot(fig_pie)
