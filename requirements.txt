@@ -8,3 +8,6 @@ joblib
 soundfile
 audioread
 ffmpeg-python
+
+audio-recorder-streamlit
+reportlab
