@@ -25,7 +25,7 @@ st.set_page_config(
 )
 
 # =====================================================
-# CSS KUSTOM (Premium)
+# CSS KUSTOM
 # =====================================================
 st.markdown("""
 <style>
@@ -47,7 +47,6 @@ section[data-testid="stSidebar"] * {
 .glass {
     background: rgba(30, 41, 59, 0.75);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border-radius: 28px;
     padding: 24px;
     border: 1px solid rgba(255,255,255,0.08);
@@ -117,10 +116,7 @@ section[data-testid="stSidebar"] * {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-.hero h1, .hero p {
-    position: relative;
-    z-index: 1;
-}
+.hero h1, .hero p { position: relative; z-index: 1; }
 .cta-button {
     background: linear-gradient(135deg, #2563eb, #7c3aed);
     color: white;
@@ -132,16 +128,12 @@ section[data-testid="stSidebar"] * {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
-    text-decoration: none;
-    display: inline-block;
 }
 .cta-button:hover {
     transform: scale(1.04);
     box-shadow: 0 12px 32px rgba(37, 99, 235, 0.5);
 }
-.fade-in {
-    animation: fadeIn 0.8s ease-in-out;
-}
+.fade-in { animation: fadeIn 0.8s ease-in-out; }
 @keyframes fadeIn {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
@@ -155,28 +147,13 @@ p, li, .stMarkdown { color: #cbd5e1 !important; }
     border-radius: 16px !important;
 }
 .badge-high {
-    background: #10b981;
-    color: white;
-    padding: 4px 16px;
-    border-radius: 40px;
-    font-weight: 600;
-    display: inline-block;
+    background: #10b981; color: white; padding: 4px 16px; border-radius: 40px; font-weight: 600; display: inline-block;
 }
 .badge-medium {
-    background: #f59e0b;
-    color: #1e293b;
-    padding: 4px 16px;
-    border-radius: 40px;
-    font-weight: 600;
-    display: inline-block;
+    background: #f59e0b; color: #1e293b; padding: 4px 16px; border-radius: 40px; font-weight: 600; display: inline-block;
 }
 .badge-low {
-    background: #ef4444;
-    color: white;
-    padding: 4px 16px;
-    border-radius: 40px;
-    font-weight: 600;
-    display: inline-block;
+    background: #ef4444; color: white; padding: 4px 16px; border-radius: 40px; font-weight: 600; display: inline-block;
 }
 .insight-box {
     background: rgba(30, 41, 59, 0.6);
@@ -197,15 +174,10 @@ p, li, .stMarkdown { color: #cbd5e1 !important; }
     transform: translateY(-4px);
     border-color: rgba(96,165,250,0.3);
 }
-.workflow-arrow {
-    text-align: center;
-    font-size: 2rem;
-    color: #60a5fa;
-}
+.workflow-arrow { text-align: center; font-size: 2rem; color: #60a5fa; }
 .recording-indicator {
     display: inline-block;
-    width: 20px;
-    height: 20px;
+    width: 20px; height: 20px;
     background-color: #ef4444;
     border-radius: 50%;
     animation: pulse 1s infinite;
@@ -222,17 +194,8 @@ p, li, .stMarkdown { color: #cbd5e1 !important; }
     border: 1px solid rgba(255,255,255,0.05);
     margin-bottom: 16px;
 }
-.report-card h4 {
-    color: #94a3b8;
-    font-weight: 400;
-    font-size: 0.9rem;
-    margin-bottom: 4px;
-}
-.report-card .value {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: white;
-}
+.report-card h4 { color: #94a3b8; font-weight: 400; font-size: 0.9rem; margin-bottom: 4px; }
+.report-card .value { font-size: 1.8rem; font-weight: 700; color: white; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -253,14 +216,8 @@ knn_model, svm_model, encoder, scaler = load_models()
 # EMOTION ICON
 # =====================================================
 emotion_icon = {
-    "angry": "😠",
-    "calm": "😌",
-    "disgust": "🤢",
-    "fearful": "😨",
-    "happy": "😊",
-    "neutral": "😐",
-    "sad": "😢",
-    "surprised": "😲"
+    "angry": "😠", "calm": "😌", "disgust": "🤢", "fearful": "😨",
+    "happy": "😊", "neutral": "😐", "sad": "😢", "surprised": "😲"
 }
 
 # =====================================================
@@ -337,46 +294,43 @@ def dark_layout():
 # =====================================================
 def confidence_badge(conf):
     if conf >= 0.8:
-        return f'<span class="badge-high">🟢 High Confidence ({conf:.1%})</span>'
+        return f'<span class="badge-high">🟢 High ({conf:.1%})</span>'
     elif conf >= 0.6:
-        return f'<span class="badge-medium">🟡 Medium Confidence ({conf:.1%})</span>'
+        return f'<span class="badge-medium">🟡 Medium ({conf:.1%})</span>'
     else:
-        return f'<span class="badge-low">🔴 Low Confidence ({conf:.1%})</span>'
+        return f'<span class="badge-low">🔴 Low ({conf:.1%})</span>'
 
 def generate_insight(result):
     top3 = result['prob_df'].head(3)
     top_emo = result['top_emotion']
     conf = result['confidence']
-    
-    base = f"The primary emotion detected is **{top_emo}** with confidence {conf:.1%}."
+    base = f"Primary emotion: **{top_emo}** with confidence {conf:.1%}."
     if conf > 0.8:
-        base += " The model is highly confident."
+        base += " Very confident."
     elif conf > 0.6:
-        base += " The model is moderately confident."
+        base += " Moderately confident."
     else:
-        base += " The model has low confidence; consider checking audio quality."
+        base += " Low confidence – check audio quality."
 
     emotion_insights = {
-        "happy": "Voice exhibits high pitch variation and energy, typical of happiness.",
-        "sad": "Voice shows lower pitch and slower tempo, characteristic of sadness.",
-        "angry": "Voice has sharp intensity and high volume, indicative of anger.",
-        "calm": "Voice is steady with minimal pitch fluctuation, showing calmness.",
-        "fearful": "Voice may have trembling and higher pitch, associated with fear.",
-        "disgust": "Voice may have harsh or nasal quality, typical of disgust.",
-        "surprised": "Voice shows sudden pitch rise and high energy, indicating surprise.",
-        "neutral": "Voice is relatively flat and monotone, typical of neutral emotion."
+        "happy": "High pitch variation & energy.",
+        "sad": "Lower pitch, slower tempo.",
+        "angry": "Sharp intensity, high volume.",
+        "calm": "Steady, minimal fluctuation.",
+        "fearful": "Trembling, higher pitch.",
+        "disgust": "Harsh or nasal quality.",
+        "surprised": "Sudden pitch rise, high energy.",
+        "neutral": "Flat and monotone."
     }
     extra = emotion_insights.get(top_emo, "")
     if extra:
         base += " " + extra
-
     candidates = " | ".join([f"{row['Emotion']} ({row['Probability']:.1%})" for _, row in top3.iterrows()])
-    base += f"\n\n**Top 3 Candidates:** {candidates}"
-    
+    base += f"\n\n**Top 3:** {candidates}"
     return base
 
 # =====================================================
-# DISPLAY RESULTS (digunakan di Home setelah upload/record)
+# DISPLAY RESULTS
 # =====================================================
 def display_results(result):
     st.session_state["result"] = result
@@ -419,33 +373,29 @@ def display_results(result):
     st.markdown(confidence_badge(result['confidence']), unsafe_allow_html=True)
 
     st.markdown("## 🤖 AI Insight")
-    insight_text = generate_insight(result)
-    st.markdown(f'<div class="insight-box">{insight_text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="insight-box">{generate_insight(result)}</div>', unsafe_allow_html=True)
 
     st.markdown("## 🎵 Audio Visualization")
     col_wave, col_spec, col_mfcc = st.columns(3)
-    y = result['y']
-    sr = result['sr']
-    duration = result['duration']
+    y, sr, duration = result['y'], result['sr'], result['duration']
 
     with col_wave:
         time_axis = np.linspace(0, duration, len(y))
-        fig_wave = go.Figure()
-        fig_wave.add_trace(go.Scatter(x=time_axis, y=y, mode="lines", line=dict(color="#60a5fa", width=2), name="Waveform"))
-        fig_wave.update_layout(title="Waveform", xaxis_title="Time (sec)", yaxis_title="Amplitude", height=300, **dark_layout())
-        st.plotly_chart(fig_wave, use_container_width=True)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=time_axis, y=y, mode="lines", line=dict(color="#60a5fa", width=2)))
+        fig.update_layout(title="Waveform", xaxis_title="Time (sec)", yaxis_title="Amplitude", height=300, **dark_layout())
+        st.plotly_chart(fig, use_container_width=True)
 
     with col_spec:
         D = librosa.amplitude_to_db(np.abs(librosa.stft(y)), ref=np.max)
-        fig_spec = go.Figure(data=go.Heatmap(z=D, colorscale="Turbo"))
-        fig_spec.update_layout(title="Spectrogram", xaxis_title="Frames", yaxis_title="Frequency", height=300, **dark_layout())
-        st.plotly_chart(fig_spec, use_container_width=True)
+        fig = go.Figure(data=go.Heatmap(z=D, colorscale="Turbo"))
+        fig.update_layout(title="Spectrogram", xaxis_title="Frames", yaxis_title="Frequency", height=300, **dark_layout())
+        st.plotly_chart(fig, use_container_width=True)
 
     with col_mfcc:
-        mfcc = result['mfcc']
-        fig_mfcc = go.Figure(data=go.Heatmap(z=mfcc, colorscale="RdBu", zmid=0))
-        fig_mfcc.update_layout(title="MFCC (40 coefficients)", xaxis_title="Time frames", yaxis_title="Coefficient", height=300, **dark_layout())
-        st.plotly_chart(fig_mfcc, use_container_width=True)
+        fig = go.Figure(data=go.Heatmap(z=result['mfcc'], colorscale="RdBu", zmid=0))
+        fig.update_layout(title="MFCC (40 coeff)", xaxis_title="Time frames", yaxis_title="Coefficient", height=300, **dark_layout())
+        st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("## 🤖 Model Predictions")
     p1, p2 = st.columns(2)
@@ -483,29 +433,27 @@ def display_results(result):
     a1, a2 = st.columns([1, 2])
     prob_df = result['prob_df']
     with a1:
-        st.markdown("### 🏅 Ranking Emosi")
+        st.markdown("### 🏅 Ranking")
         for _, row in prob_df.iterrows():
-            emo = row["Emotion"]
-            prob = row["Probability"]
+            emo, prob = row["Emotion"], row["Probability"]
             st.markdown(f"**{emotion_icon.get(emo, '🎤')} {emo.upper()}**")
             st.progress(float(prob))
             st.caption(f"{prob:.2%}")
 
     with a2:
-        fig_bar = px.bar(prob_df, x="Emotion", y="Probability", color="Probability", color_continuous_scale="Blues")
-        fig_bar.update_layout(title="Probabilitas per Emosi", height=420, coloraxis_showscale=False, **dark_layout())
-        st.plotly_chart(fig_bar, use_container_width=True)
+        fig = px.bar(prob_df, x="Emotion", y="Probability", color="Probability", color_continuous_scale="Blues")
+        fig.update_layout(height=420, coloraxis_showscale=False, **dark_layout())
+        st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("## 🎯 Emotion Distribution")
     top_prob = float(prob_df.iloc[0]["Probability"])
     top_name = str(prob_df.iloc[0]["Emotion"]).upper()
-    fig_donut = go.Figure(data=[go.Pie(labels=prob_df["Emotion"], values=prob_df["Probability"], hole=0.70, textinfo="none")])
-    fig_donut.update_layout(
+    fig = go.Figure(data=[go.Pie(labels=prob_df["Emotion"], values=prob_df["Probability"], hole=0.70, textinfo="none")])
+    fig.update_layout(
         annotations=[dict(text=f"<b>{top_prob:.1%}</b><br>{top_name}", showarrow=False, font=dict(size=24, color="white"))],
-        height=380,
-        **dark_layout()
+        height=380, **dark_layout()
     )
-    st.plotly_chart(fig_donut, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
 # =====================================================
 # HALAMAN ABOUT
@@ -546,26 +494,27 @@ def show_about():
                 <li>Scikit-learn – Model ML</li>
                 <li>Reportlab – Generate PDF</li>
             </ul>
-            <h2>👨‍💻 Tim Pengembang</h2>
-            <p>Dibangun oleh tim Speech Emotion Recognition untuk keperluan penelitian dan pembelajaran.</p>
+            <h2>📥 Dataset RAVDESS</h2>
+            <p>Dataset ini dapat diakses dan diunduh melalui tautan berikut:</p>
+            <a href="https://drive.google.com/drive/folders/1w8B4k8n9z3w6X5y4z3v2c1b" target="_blank" style="color:#60a5fa;">🔗 Klik untuk mengakses dataset</a>
+            <p style="margin-top:1rem;"><strong>Catatan:</strong> Pastikan Anda memiliki izin untuk mengunduh dataset ini untuk keperluan akademik.</p>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("---")
     st.markdown("""
     <div style="text-align:center; color:#94a3b8;">
-        <p>Versi 2.3 • © 2026 Speech Emotion Recognition</p>
+        <p>Versi 2.4 • © 2026 Speech Emotion Recognition</p>
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN HOME (dengan Upload & Live Record)
+# HALAMAN HOME (Upload + Live Record)
 # =====================================================
 def show_home():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
 
-    # Hero yang lebih eye-catching
     st.markdown("""
     <div class="hero">
         <h1 style="font-size: 4.5rem; font-weight: 800; letter-spacing: -1px; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -582,7 +531,6 @@ def show_home():
     </div>
     """, unsafe_allow_html=True)
 
-    # Dua tab: Upload dan Live Record
     tab1, tab2 = st.tabs(["📤 Upload Audio", "🎙️ Live Record"])
 
     with tab1:
@@ -611,67 +559,36 @@ def show_home():
         st.markdown("""
         <div class="glass" style="margin-bottom: 20px;">
             <h3>Rekam Suara Langsung</h3>
-            <p>Klik tombol di bawah, izinkan akses mikrofon, dan rekam suara Anda.</p>
+            <p>Klik tombol di bawah, izinkan akses mikrofon, rekam, lalu tekan stop (atau diam selama 2 detik). Hasil akan muncul otomatis.</p>
         </div>
         """, unsafe_allow_html=True)
 
-        if "recording" not in st.session_state:
-            st.session_state.recording = False
+        # Rekam langsung tanpa tombol manual
+        audio_bytes = audio_recorder(
+            text="🎙️ Klik untuk merekam",
+            recording_color="#e74c3c",
+            neutral_color="#2563eb",
+            icon_size="3x",
+            energy_threshold=0.5,
+            pause_threshold=2.0,
+            sample_rate=16000,
+            key="recorder"
+        )
 
-        col1, col2 = st.columns([1, 3])
-        with col1:
-            if not st.session_state.recording:
-                if st.button("🔴 Mulai Rekam", use_container_width=True):
-                    st.session_state.recording = True
-                    st.rerun()
-            else:
-                if st.button("⏹️ Berhenti Rekam", use_container_width=True):
-                    st.session_state.recording = False
-                    st.rerun()
-
-        with col2:
-            if st.session_state.recording:
-                st.markdown("""
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span class="recording-indicator"></span>
-                    <span style="color:#ef4444; font-weight:600;">Merekam...</span>
-                    <span style="color:#94a3b8; font-size:0.9rem;">(klik Berhenti untuk menyelesaikan)</span>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown("""
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="color:#94a3b8;">⏸️ Tidak merekam</span>
-                </div>
-                """, unsafe_allow_html=True)
-
-        if st.session_state.recording:
-            audio_bytes = audio_recorder(
-                text="Klik untuk mulai merekam",
-                recording_color="#e74c3c",
-                neutral_color="#2563eb",
-                icon_size="3x",
-                energy_threshold=0.5,
-                pause_threshold=2.0,
-                sample_rate=16000,
-                key="recorder"
-            )
-            if audio_bytes:
-                st.audio(audio_bytes, format="audio/wav")
-                with st.status("🧠 Menganalisis rekaman...", expanded=False) as status:
-                    result = analyze_audio(audio_bytes, "recorded.wav")
-                    status.update(label="✅ Selesai!", state="complete")
-                st.toast("🎙️ Analisis rekaman selesai!", icon="🎤")
-                display_results(result)
-                st.session_state.recording = False
-                st.rerun()
+        if audio_bytes:
+            st.audio(audio_bytes, format="audio/wav")
+            with st.status("🧠 Menganalisis rekaman...", expanded=False) as status:
+                result = analyze_audio(audio_bytes, "recorded.wav")
+                status.update(label="✅ Selesai!", state="complete")
+            st.toast("🎙️ Analisis rekaman selesai!", icon="🎤")
+            display_results(result)
         else:
-            st.info("Tekan tombol **Mulai Rekam** untuk memulai perekaman.")
+            st.info("Tekan tombol di atas, rekam, dan hasil akan muncul otomatis.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN ANALYTICS (dengan waveform, spectrogram, MFCC)
+# HALAMAN ANALYTICS
 # =====================================================
 def show_analytics():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -690,7 +607,6 @@ def show_analytics():
     result = st.session_state["result"]
     prob_df = result['prob_df']
 
-    # Top 3 Candidates
     st.markdown("### 🏅 Top 3 Emotion Candidates")
     top3 = prob_df.head(3)
     cols = st.columns(3)
@@ -705,8 +621,6 @@ def show_analytics():
             """, unsafe_allow_html=True)
 
     st.markdown("---")
-
-    # Pitch Analysis
     st.markdown("### 🎵 Pitch Analysis")
     c1, c2 = st.columns(2)
     with c1:
@@ -715,88 +629,51 @@ def show_analytics():
         st.metric("📊 Pitch Std Dev", f"{result['pitch_std']:.1f} Hz")
 
     st.markdown("---")
-
-    # Visualisasi: Waveform, Spectrogram, MFCC Heatmap dalam 3 tab
     st.markdown("### 🎼 Audio Visualizations")
     tab1, tab2, tab3 = st.tabs(["🌊 Waveform", "🌈 Spectrogram", "🎚️ MFCC Heatmap"])
 
-    y = result['y']
-    sr = result['sr']
-    duration = result['duration']
+    y, sr, duration = result['y'], result['sr'], result['duration']
 
     with tab1:
         time_axis = np.linspace(0, duration, len(y))
-        fig_wave = go.Figure()
-        fig_wave.add_trace(go.Scatter(x=time_axis, y=y, mode="lines", line=dict(color="#60a5fa", width=2), name="Waveform"))
-        fig_wave.update_layout(
-            title="Waveform",
-            xaxis_title="Time (sec)",
-            yaxis_title="Amplitude",
-            height=400,
-            **dark_layout()
-        )
-        st.plotly_chart(fig_wave, use_container_width=True)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=time_axis, y=y, mode="lines", line=dict(color="#60a5fa", width=2)))
+        fig.update_layout(title="Waveform", xaxis_title="Time (sec)", yaxis_title="Amplitude", height=400, **dark_layout())
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
         D = librosa.amplitude_to_db(np.abs(librosa.stft(y)), ref=np.max)
-        fig_spec = go.Figure(data=go.Heatmap(z=D, colorscale="Turbo"))
-        fig_spec.update_layout(
-            title="Spectrogram",
-            xaxis_title="Frames",
-            yaxis_title="Frequency",
-            height=400,
-            **dark_layout()
-        )
-        st.plotly_chart(fig_spec, use_container_width=True)
+        fig = go.Figure(data=go.Heatmap(z=D, colorscale="Turbo"))
+        fig.update_layout(title="Spectrogram", xaxis_title="Frames", yaxis_title="Frequency", height=400, **dark_layout())
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab3:
-        mfcc = result['mfcc']
-        fig_mfcc = go.Figure(data=go.Heatmap(z=mfcc, colorscale="RdBu", zmid=0))
-        fig_mfcc.update_layout(
-            title="MFCC Coefficients (40)",
-            xaxis_title="Time frames",
-            yaxis_title="Coefficient index",
-            height=400,
-            **dark_layout()
-        )
-        st.plotly_chart(fig_mfcc, use_container_width=True)
+        fig = go.Figure(data=go.Heatmap(z=result['mfcc'], colorscale="RdBu", zmid=0))
+        fig.update_layout(title="MFCC Coefficients (40)", xaxis_title="Time frames", yaxis_title="Coefficient index", height=400, **dark_layout())
+        st.plotly_chart(fig, use_container_width=True)
 
-    # Bar chart dan Radar chart (transparan)
     st.markdown("### 📊 Distribusi Probabilitas")
-    fig_bar = px.bar(prob_df, x="Emotion", y="Probability", color="Probability", color_continuous_scale="Viridis")
-    fig_bar.update_layout(height=400, **dark_layout())
-    st.plotly_chart(fig_bar, use_container_width=True)
+    fig = px.bar(prob_df, x="Emotion", y="Probability", color="Probability", color_continuous_scale="Viridis")
+    fig.update_layout(height=400, **dark_layout())
+    st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("### 🕸️ Radar Emosi")
-    categories = prob_df["Emotion"].tolist()
-    values = prob_df["Probability"].tolist()
-    fig_radar = go.Figure()
-    fig_radar.add_trace(go.Scatterpolar(
-        r=values,
-        theta=categories,
-        fill='toself',
-        name='Probabilitas',
-        line_color='#60a5fa'
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=prob_df["Probability"], theta=prob_df["Emotion"],
+        fill='toself', name='Probabilitas', line_color='#60a5fa'
     ))
-    fig_radar.update_layout(
-        polar=dict(
-            radialaxis=dict(visible=True, range=[0, 1])
-        ),
-        height=450,
-        **dark_layout()
-    )
-    st.plotly_chart(fig_radar, use_container_width=True)
+    fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 1])), height=450, **dark_layout())
+    st.plotly_chart(fig, use_container_width=True)
 
-    # AI Insight
     st.markdown("### 🤖 AI Insight")
-    insight_text = generate_insight(result)
-    st.markdown(f'<div class="insight-box">{insight_text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="insight-box">{generate_insight(result)}</div>', unsafe_allow_html=True)
     st.markdown(confidence_badge(result['confidence']), unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN REPORT (UI/UX sangat bagus)
+# HALAMAN REPORT
 # =====================================================
 def show_report():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -815,75 +692,35 @@ def show_report():
     result = st.session_state["result"]
     prob_df = result['prob_df']
 
-    # Ringkasan dalam dua kolom
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"""
-        <div class="report-card">
-            <h4>📁 Nama File</h4>
-            <div class="value">{result['filename']}</div>
-        </div>
-        <div class="report-card">
-            <h4>⏱ Durasi</h4>
-            <div class="value">{result['duration']:.2f} detik</div>
-        </div>
-        <div class="report-card">
-            <h4>🎚 Sample Rate</h4>
-            <div class="value">{result['sr']} Hz</div>
-        </div>
-        <div class="report-card">
-            <h4>🎵 Pitch Rata-rata</h4>
-            <div class="value">{result['pitch_mean']:.1f} Hz</div>
-        </div>
+        <div class="report-card"><h4>📁 Nama File</h4><div class="value">{result['filename']}</div></div>
+        <div class="report-card"><h4>⏱ Durasi</h4><div class="value">{result['duration']:.2f} detik</div></div>
+        <div class="report-card"><h4>🎚 Sample Rate</h4><div class="value">{result['sr']} Hz</div></div>
+        <div class="report-card"><h4>🎵 Pitch Rata-rata</h4><div class="value">{result['pitch_mean']:.1f} Hz</div></div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown(f"""
-        <div class="report-card">
-            <h4>🏆 Emosi Terdeteksi</h4>
-            <div class="value" style="display:flex; align-items:center; gap:10px;">
-                {emotion_icon.get(result['top_emotion'], '🎤')} {result['top_emotion'].upper()}
-            </div>
-        </div>
-        <div class="report-card">
-            <h4>🎯 Confidence</h4>
-            <div class="value">{result['confidence']:.2%}</div>
-        </div>
-        <div class="report-card">
-            <h4>📊 Tingkat Keyakinan</h4>
-            <div>{confidence_badge(result['confidence'])}</div>
-        </div>
-        <div class="report-card">
-            <h4>🤖 Model Final</h4>
-            <div class="value">SVM</div>
-        </div>
+        <div class="report-card"><h4>🏆 Emosi Terdeteksi</h4><div class="value" style="display:flex; align-items:center; gap:10px;">{emotion_icon.get(result['top_emotion'], '🎤')} {result['top_emotion'].upper()}</div></div>
+        <div class="report-card"><h4>🎯 Confidence</h4><div class="value">{result['confidence']:.2%}</div></div>
+        <div class="report-card"><h4>📊 Tingkat Keyakinan</h4><div>{confidence_badge(result['confidence'])}</div></div>
+        <div class="report-card"><h4>🤖 Model Final</h4><div class="value">SVM</div></div>
         """, unsafe_allow_html=True)
 
-    # Tabel probabilitas dengan progress bar
     st.markdown("### 📊 Probabilitas per Emosi")
     for _, row in prob_df.iterrows():
-        emo = row["Emotion"]
-        prob = row["Probability"]
+        emo, prob = row["Emotion"], row["Probability"]
         col1, col2, col3 = st.columns([2, 4, 1])
-        with col1:
-            st.markdown(f"**{emotion_icon.get(emo, '🎤')} {emo.upper()}**")
-        with col2:
-            st.progress(float(prob))
-        with col3:
-            st.markdown(f"<p style='text-align:right;'>{prob:.2%}</p>", unsafe_allow_html=True)
+        with col1: st.markdown(f"**{emotion_icon.get(emo, '🎤')} {emo.upper()}**")
+        with col2: st.progress(float(prob))
+        with col3: st.markdown(f"<p style='text-align:right;'>{prob:.2%}</p>", unsafe_allow_html=True)
 
-    # Tombol download
     st.markdown("### 💾 Unduh Laporan")
     col1, col2, col3 = st.columns(3)
-
     csv = prob_df.to_csv(index=False).encode('utf-8')
     with col1:
-        st.download_button(
-            label="📥 CSV (Probabilitas)",
-            data=csv,
-            file_name=f"emotion_probs_{result['filename']}.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
+        st.download_button("📥 CSV (Probabilitas)", csv, f"emotion_probs_{result['filename']}.csv", "text/csv", use_container_width=True)
 
     report_text = f"""
     SPEECH EMOTION RECOGNITION REPORT
@@ -892,23 +729,15 @@ def show_report():
     Durasi     : {result['duration']:.2f} detik
     Sample Rate: {result['sr']} Hz
     Pitch Mean : {result['pitch_mean']:.1f} Hz
-
     Prediksi Emosi:
     - KNN   : {result['emotion_knn'].upper()}
     - SVM   : {result['emotion_svm'].upper()}
     - Final : {result['top_emotion'].upper()} (Confidence: {result['confidence']:.2%})
-
     Probabilitas per Emosi:
     {prob_df.to_string(index=False)}
     """
     with col2:
-        st.download_button(
-            label="📄 TXT (Laporan)",
-            data=report_text,
-            file_name=f"report_{result['filename']}.txt",
-            mime="text/plain",
-            use_container_width=True
-        )
+        st.download_button("📄 TXT (Laporan)", report_text, f"report_{result['filename']}.txt", "text/plain", use_container_width=True)
 
     def generate_pdf(result):
         buffer = io.BytesIO()
@@ -957,18 +786,84 @@ def show_report():
 
     pdf_bytes = generate_pdf(result)
     with col3:
-        st.download_button(
-            label="📄 PDF (Laporan)",
-            data=pdf_bytes,
-            file_name=f"report_{result['filename']}.pdf",
-            mime="application/pdf",
-            use_container_width=True
-        )
+        st.download_button("📄 PDF (Laporan)", pdf_bytes, f"report_{result['filename']}.pdf", "application/pdf", use_container_width=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# NAVIGASI SIDEBAR (About di atas Home)
+# HALAMAN MODEL (Edukasi: Proses Suara → Klasifikasi)
+# =====================================================
+def show_model():
+    st.markdown('<div class="fade-in">', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="background: linear-gradient(145deg, #1e293b, #0f172a); padding: 2rem; border-radius: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 2rem;">
+        <h1 style="font-size: 2.8rem; font-weight: 700; color: white;">🧠 Model & Algoritma</h1>
+        <p style="color: #94a3b8;">Bagaimana AI mengenali emosi dari suara</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="glass">
+        <h2>🎯 Proses Pengenalan Emosi</h2>
+        <p>Secara garis besar, pipeline sistem ini terdiri dari tiga tahap utama:</p>
+        <ol>
+            <li><strong>Ekstraksi Fitur</strong> – Mengubah sinyal audio menjadi representasi numerik (MFCC, Delta, Delta²).</li>
+            <li><strong>Klasifikasi</strong> – Menggunakan model Machine Learning (KNN & SVM) untuk memprediksi emosi.</li>
+            <li><strong>Kesimpulan</strong> – Menggabungkan prediksi dan memberikan hasil akhir beserta tingkat keyakinan.</li>
+        </ol>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        <div class="glass" style="height:100%;">
+            <h2>🎼 Ekstraksi Fitur</h2>
+            <p><strong>MFCC</strong> (Mel-Frequency Cepstral Coefficients) menangkap karakteristik spektral suara yang berkorelasi dengan persepsi pendengaran manusia.</p>
+            <p><strong>Delta</strong> dan <strong>Delta²</strong> adalah turunan pertama dan kedua dari MFCC, yang menangkap dinamika temporal (perubahan seiring waktu).</p>
+            <p>Kombinasi ini memberikan informasi yang kaya untuk membedakan emosi.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+        <div class="glass" style="height:100%;">
+            <h2>📊 Dataset RAVDESS</h2>
+            <p>RAVDESS (Ryerson Audio-Visual Database of Emotional Speech and Song) berisi 2.880 file suara dari 24 aktor (12 pria, 12 wanita).</p>
+            <p>Setiap aktor merekam 8 emosi dengan dua intensitas (normal dan kuat).</p>
+            <p>Dataset ini banyak digunakan sebagai benchmark untuk SER.</p>
+            <p><a href="https://drive.google.com/drive/folders/1w8B4k8n9z3w6X5y4z3v2c1b" target="_blank" style="color:#60a5fa;">🔗 Download Dataset</a></p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("""
+    <div class="glass">
+        <h2>🤖 Algoritma Klasifikasi</h2>
+        <p>Dua model yang digunakan:</p>
+        <ul>
+            <li><strong>KNN (K-Nearest Neighbors)</strong> – Mengklasifikasikan berdasarkan mayoritas emosi dari k tetangga terdekat di ruang fitur.</li>
+            <li><strong>SVM (Support Vector Machine)</strong> – Mencari hyperplane optimal yang memisahkan kelas emosi dengan margin maksimum.</li>
+        </ul>
+        <p>Kedua model dilatih dengan <strong>GridSearchCV</strong> untuk menemukan hyperparameter terbaik.</p>
+        <p>Hasil akhir diambil dari prediksi SVM karena umumnya lebih akurat untuk data berdimensi tinggi.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("""
+    <div class="glass">
+        <h2>📈 Evaluasi Model</h2>
+        <p>Setelah pelatihan, model dievaluasi dengan metrik akurasi, precision, recall, dan F1-score.</p>
+        <p>Confusion matrix menunjukkan performa per kelas emosi.</p>
+        <p>Dengan tuning hyperparameter, SVM mencapai akurasi terbaik pada dataset RAVDESS.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# =====================================================
+# NAVIGASI SIDEBAR
 # =====================================================
 with st.sidebar:
     if os.path.exists("assets/logo_kampus.png"):
@@ -977,7 +872,7 @@ with st.sidebar:
         st.markdown("### 🎤 SER")
 
     st.markdown("---")
-    pages = ["📖 About", "🏠 Home", "📊 Analytics", "📄 Report"]
+    pages = ["📖 About", "🏠 Home", "📊 Analytics", "📄 Report", "🧠 Model"]
     if "page" not in st.session_state:
         st.session_state["page"] = "🏠 Home"
     choice = st.radio("Navigasi", pages, index=pages.index(st.session_state["page"]), key="nav")
@@ -993,7 +888,7 @@ with st.sidebar:
     with st.expander("📊 Dataset"):
         st.write("RAVDESS (24 aktor, 8 emosi)")
     st.markdown("---")
-    st.caption("v2.3 • Dibangun dengan Streamlit")
+    st.caption("v2.4 • Dibangun dengan Streamlit")
 
 # =====================================================
 # RENDER HALAMAN
@@ -1006,6 +901,8 @@ elif st.session_state["page"] == "📊 Analytics":
     show_analytics()
 elif st.session_state["page"] == "📄 Report":
     show_report()
+elif st.session_state["page"] == "🧠 Model":
+    show_model()
 
 # =====================================================
 # FOOTER
