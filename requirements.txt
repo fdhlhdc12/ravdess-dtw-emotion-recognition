@@ -8,6 +8,5 @@ joblib
 soundfile
 audioread
 ffmpeg-python
-
-audio-recorder-streamlit
+audio-recorder-streamlit  # <-- perhatikan nama package
 reportlab
