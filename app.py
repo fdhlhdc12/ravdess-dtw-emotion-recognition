@@ -117,11 +117,7 @@ section[data-testid="stSidebar"] * {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-.hero h1 {
-    position: relative;
-    z-index: 1;
-}
-.hero p {
+.hero h1, .hero p {
     position: relative;
     z-index: 1;
 }
@@ -188,12 +184,6 @@ p, li, .stMarkdown { color: #cbd5e1 !important; }
     padding: 16px 20px;
     border-radius: 12px;
     margin: 12px 0;
-}
-.workflow-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin: 20px 0;
 }
 .workflow-item {
     background: rgba(30, 41, 59, 0.5);
@@ -332,7 +322,7 @@ def analyze_audio(audio_bytes, filename="temp.wav"):
     }
 
 # =====================================================
-# PLOTLY DARK THEME
+# PLOTLY DARK THEME (transparan)
 # =====================================================
 def dark_layout():
     return dict(
@@ -518,7 +508,7 @@ def display_results(result):
     st.plotly_chart(fig_donut, use_container_width=True)
 
 # =====================================================
-# HALAMAN ABOUT (ditaruh di atas Home di sidebar)
+# HALAMAN ABOUT
 # =====================================================
 def show_about():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -564,7 +554,7 @@ def show_about():
     st.markdown("---")
     st.markdown("""
     <div style="text-align:center; color:#94a3b8;">
-        <p>Versi 2.2 • © 2026 Speech Emotion Recognition</p>
+        <p>Versi 2.3 • © 2026 Speech Emotion Recognition</p>
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -625,7 +615,6 @@ def show_home():
         </div>
         """, unsafe_allow_html=True)
 
-        # State untuk recording
         if "recording" not in st.session_state:
             st.session_state.recording = False
 
@@ -682,7 +671,7 @@ def show_home():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN ANALYTICS
+# HALAMAN ANALYTICS (dengan waveform, spectrogram, MFCC)
 # =====================================================
 def show_analytics():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -701,6 +690,7 @@ def show_analytics():
     result = st.session_state["result"]
     prob_df = result['prob_df']
 
+    # Top 3 Candidates
     st.markdown("### 🏅 Top 3 Emotion Candidates")
     top3 = prob_df.head(3)
     cols = st.columns(3)
@@ -715,6 +705,8 @@ def show_analytics():
             """, unsafe_allow_html=True)
 
     st.markdown("---")
+
+    # Pitch Analysis
     st.markdown("### 🎵 Pitch Analysis")
     c1, c2 = st.columns(2)
     with c1:
@@ -722,21 +714,58 @@ def show_analytics():
     with c2:
         st.metric("📊 Pitch Std Dev", f"{result['pitch_std']:.1f} Hz")
 
-    st.markdown("### 🎼 MFCC Heatmap (Full)")
-    fig_mfcc_full = go.Figure(data=go.Heatmap(z=result['mfcc'], colorscale="RdBu", zmid=0))
-    fig_mfcc_full.update_layout(
-        title="MFCC Coefficients (40)",
-        xaxis_title="Time frames",
-        yaxis_title="Coefficient index",
-        height=500,
-        **dark_layout()
-    )
-    st.plotly_chart(fig_mfcc_full, use_container_width=True)
+    st.markdown("---")
 
+    # Visualisasi: Waveform, Spectrogram, MFCC Heatmap dalam 3 tab
+    st.markdown("### 🎼 Audio Visualizations")
+    tab1, tab2, tab3 = st.tabs(["🌊 Waveform", "🌈 Spectrogram", "🎚️ MFCC Heatmap"])
+
+    y = result['y']
+    sr = result['sr']
+    duration = result['duration']
+
+    with tab1:
+        time_axis = np.linspace(0, duration, len(y))
+        fig_wave = go.Figure()
+        fig_wave.add_trace(go.Scatter(x=time_axis, y=y, mode="lines", line=dict(color="#60a5fa", width=2), name="Waveform"))
+        fig_wave.update_layout(
+            title="Waveform",
+            xaxis_title="Time (sec)",
+            yaxis_title="Amplitude",
+            height=400,
+            **dark_layout()
+        )
+        st.plotly_chart(fig_wave, use_container_width=True)
+
+    with tab2:
+        D = librosa.amplitude_to_db(np.abs(librosa.stft(y)), ref=np.max)
+        fig_spec = go.Figure(data=go.Heatmap(z=D, colorscale="Turbo"))
+        fig_spec.update_layout(
+            title="Spectrogram",
+            xaxis_title="Frames",
+            yaxis_title="Frequency",
+            height=400,
+            **dark_layout()
+        )
+        st.plotly_chart(fig_spec, use_container_width=True)
+
+    with tab3:
+        mfcc = result['mfcc']
+        fig_mfcc = go.Figure(data=go.Heatmap(z=mfcc, colorscale="RdBu", zmid=0))
+        fig_mfcc.update_layout(
+            title="MFCC Coefficients (40)",
+            xaxis_title="Time frames",
+            yaxis_title="Coefficient index",
+            height=400,
+            **dark_layout()
+        )
+        st.plotly_chart(fig_mfcc, use_container_width=True)
+
+    # Bar chart dan Radar chart (transparan)
     st.markdown("### 📊 Distribusi Probabilitas")
-    fig_bar_full = px.bar(prob_df, x="Emotion", y="Probability", color="Probability", color_continuous_scale="Viridis")
-    fig_bar_full.update_layout(height=400, **dark_layout())
-    st.plotly_chart(fig_bar_full, use_container_width=True)
+    fig_bar = px.bar(prob_df, x="Emotion", y="Probability", color="Probability", color_continuous_scale="Viridis")
+    fig_bar.update_layout(height=400, **dark_layout())
+    st.plotly_chart(fig_bar, use_container_width=True)
 
     st.markdown("### 🕸️ Radar Emosi")
     categories = prob_df["Emotion"].tolist()
@@ -758,6 +787,7 @@ def show_analytics():
     )
     st.plotly_chart(fig_radar, use_container_width=True)
 
+    # AI Insight
     st.markdown("### 🤖 AI Insight")
     insight_text = generate_insight(result)
     st.markdown(f'<div class="insight-box">{insight_text}</div>', unsafe_allow_html=True)
@@ -828,7 +858,7 @@ def show_report():
         </div>
         """, unsafe_allow_html=True)
 
-    # Tabel probabilitas dengan progress bar yang lebih rapi
+    # Tabel probabilitas dengan progress bar
     st.markdown("### 📊 Probabilitas per Emosi")
     for _, row in prob_df.iterrows():
         emo = row["Emotion"]
@@ -841,11 +871,10 @@ def show_report():
         with col3:
             st.markdown(f"<p style='text-align:right;'>{prob:.2%}</p>", unsafe_allow_html=True)
 
-    # Tombol download dengan gaya lebih baik
+    # Tombol download
     st.markdown("### 💾 Unduh Laporan")
     col1, col2, col3 = st.columns(3)
 
-    # CSV
     csv = prob_df.to_csv(index=False).encode('utf-8')
     with col1:
         st.download_button(
@@ -856,7 +885,6 @@ def show_report():
             use_container_width=True
         )
 
-    # TXT
     report_text = f"""
     SPEECH EMOTION RECOGNITION REPORT
     ==================================
@@ -882,7 +910,6 @@ def show_report():
             use_container_width=True
         )
 
-    # PDF
     def generate_pdf(result):
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=letter)
@@ -950,7 +977,6 @@ with st.sidebar:
         st.markdown("### 🎤 SER")
 
     st.markdown("---")
-    # Urutan: About, Home, Analytics, Report
     pages = ["📖 About", "🏠 Home", "📊 Analytics", "📄 Report"]
     if "page" not in st.session_state:
         st.session_state["page"] = "🏠 Home"
@@ -967,7 +993,7 @@ with st.sidebar:
     with st.expander("📊 Dataset"):
         st.write("RAVDESS (24 aktor, 8 emosi)")
     st.markdown("---")
-    st.caption("v2.2 • Dibangun dengan Streamlit")
+    st.caption("v2.3 • Dibangun dengan Streamlit")
 
 # =====================================================
 # RENDER HALAMAN
