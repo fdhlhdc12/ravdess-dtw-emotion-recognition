@@ -8,7 +8,7 @@ import os
 import plotly.graph_objects as go
 import plotly.express as px
 from feature_extraction_ml import extract_feature_ml
-from streamlit_audio_recorder import audio_recorder
+from audio_recorder_streamlit import audio_recorder
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
