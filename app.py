@@ -25,7 +25,7 @@ st.set_page_config(
 )
 
 # =====================================================
-# CSS KUSTOM
+# CSS KUSTOM (dengan pemisah navigasi)
 # =====================================================
 st.markdown("""
 <style>
@@ -44,6 +44,21 @@ section[data-testid="stSidebar"] {
 section[data-testid="stSidebar"] * {
     color: #f1f5f9 !important;
 }
+
+/* Pemisah navigasi: garis bawah tiap item radio */
+section[data-testid="stSidebar"] div[role="radiogroup"] label {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 10px 0;
+    margin: 0;
+    transition: background 0.2s;
+}
+section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background: rgba(255,255,255,0.05);
+}
+section[data-testid="stSidebar"] div[role="radiogroup"] label:last-child {
+    border-bottom: none;
+}
+
 .glass {
     background: rgba(30, 41, 59, 0.75);
     backdrop-filter: blur(12px);
@@ -279,7 +294,7 @@ def analyze_audio(audio_bytes, filename="temp.wav"):
     }
 
 # =====================================================
-# PLOTLY DARK THEME (transparan)
+# PLOTLY DARK THEME
 # =====================================================
 def dark_layout():
     return dict(
@@ -504,7 +519,7 @@ def show_about():
     st.markdown("---")
     st.markdown("""
     <div style="text-align:center; color:#94a3b8;">
-        <p>Versi 2.4 • © 2026 Speech Emotion Recognition</p>
+        <p>Versi 2.5 • © 2026 Speech Emotion Recognition</p>
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -563,7 +578,6 @@ def show_home():
         </div>
         """, unsafe_allow_html=True)
 
-        # Rekam langsung tanpa tombol manual
         audio_bytes = audio_recorder(
             text="🎙️ Klik untuk merekam",
             recording_color="#e74c3c",
@@ -791,7 +805,7 @@ def show_report():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN MODEL (Edukasi: Proses Suara → Klasifikasi)
+# HALAMAN MODEL (Edukasi)
 # =====================================================
 def show_model():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -863,7 +877,7 @@ def show_model():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# NAVIGASI SIDEBAR
+# NAVIGASI SIDEBAR (dengan pemisah garis)
 # =====================================================
 with st.sidebar:
     if os.path.exists("assets/logo_kampus.png"):
@@ -872,6 +886,8 @@ with st.sidebar:
         st.markdown("### 🎤 SER")
 
     st.markdown("---")
+
+    # Menu utama dengan radio yang sudah diberi CSS border-bottom
     pages = ["📖 About", "🏠 Home", "📊 Analytics", "📄 Report", "🧠 Model"]
     if "page" not in st.session_state:
         st.session_state["page"] = "🏠 Home"
@@ -888,7 +904,7 @@ with st.sidebar:
     with st.expander("📊 Dataset"):
         st.write("RAVDESS (24 aktor, 8 emosi)")
     st.markdown("---")
-    st.caption("v2.4 • Dibangun dengan Streamlit")
+    st.caption("v2.5 • Dibangun dengan Streamlit")
 
 # =====================================================
 # RENDER HALAMAN
