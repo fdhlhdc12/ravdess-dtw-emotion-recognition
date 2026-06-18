@@ -8,12 +8,12 @@ import os
 import plotly.graph_objects as go
 import plotly.express as px
 from feature_extraction_ml import extract_feature_ml
-from audio_recorder_streamlit import audio_recorder
+from audio_recorder_streamlit import audio_recorder  # <-- perbaikan import
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from reportlab.lib.utils import ImageReader
 import io
 import datetime
+import time
 
 # =====================================================
 # PAGE CONFIG
@@ -26,7 +26,7 @@ st.set_page_config(
 )
 
 # =====================================================
-# CSS KUSTOM
+# CSS KUSTOM (dengan animasi rekaman)
 # =====================================================
 st.markdown("""
 <style>
@@ -166,16 +166,37 @@ p, li, .stMarkdown { color: #cbd5e1 !important; }
     border-radius: 12px;
     margin: 12px 0;
 }
-.workflow-step {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 10px 0;
+.workflow-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 20px 0;
+}
+.workflow-item {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
 }
 .workflow-arrow {
-    color: #60a5fa;
+    text-align: center;
     font-size: 2rem;
+    color: #60a5fa;
+}
+/* Animasi rekaman berkedip */
+.recording-indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+@keyframes pulse {
+    0% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0.4; transform: scale(0.9); }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -208,7 +229,7 @@ emotion_icon = {
 }
 
 # =====================================================
-# FUNGSI ANALISIS UTAMA (dengan pitch)
+# FUNGSI ANALISIS UTAMA
 # =====================================================
 def analyze_audio(audio_bytes, filename="temp.wav"):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
@@ -218,7 +239,6 @@ def analyze_audio(audio_bytes, filename="temp.wav"):
     y, sr = librosa.load(audio_path, sr=None)
     duration = librosa.get_duration(y=y, sr=sr)
 
-    # Ekstraksi fitur untuk model
     feature = extract_feature_ml(audio_path)
     feature = feature.reshape(1, -1)
     feature_scaled = scaler.transform(feature)
@@ -237,10 +257,8 @@ def analyze_audio(audio_bytes, filename="temp.wav"):
         "Probability": probs
     }).sort_values("Probability", ascending=False)
 
-    # MFCC untuk heatmap
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
 
-    # Pitch analysis (mean, std)
     pitches, magnitudes = librosa.piptrack(y=y, sr=sr, fmin=50, fmax=500)
     pitch_values = pitches[magnitudes > np.median(magnitudes)]
     if len(pitch_values) > 0:
@@ -291,7 +309,7 @@ def confidence_badge(conf):
         return f'<span class="badge-low">🔴 Low Confidence ({conf:.1%})</span>'
 
 # =====================================================
-# AI INSIGHT (dengan Top 3 candidates)
+# AI INSIGHT
 # =====================================================
 def generate_insight(result):
     top3 = result['prob_df'].head(3)
@@ -306,7 +324,6 @@ def generate_insight(result):
     else:
         base += " The model has low confidence; consider checking audio quality."
 
-    # Tambahan berdasarkan emosi
     emotion_insights = {
         "happy": "Voice exhibits high pitch variation and energy, typical of happiness.",
         "sad": "Voice shows lower pitch and slower tempo, characteristic of sadness.",
@@ -321,19 +338,17 @@ def generate_insight(result):
     if extra:
         base += " " + extra
 
-    # Top 3 candidates
     candidates = " | ".join([f"{row['Emotion']} ({row['Probability']:.1%})" for _, row in top3.iterrows()])
     base += f"\n\n**Top 3 Candidates:** {candidates}"
     
     return base
 
 # =====================================================
-# FUNGSI DISPLAY HASIL
+# DISPLAY RESULTS
 # =====================================================
 def display_results(result):
     st.session_state["result"] = result
 
-    # KPI Cards
     st.markdown("## 📊 Audio Analytics")
     c1, c2, c3, c4 = st.columns(4)
     with c1:
@@ -369,15 +384,12 @@ def display_results(result):
         </div>
         """, unsafe_allow_html=True)
 
-    # Confidence Badge
     st.markdown(confidence_badge(result['confidence']), unsafe_allow_html=True)
 
-    # AI Insight
     st.markdown("## 🤖 AI Insight")
     insight_text = generate_insight(result)
     st.markdown(f'<div class="insight-box">{insight_text}</div>', unsafe_allow_html=True)
 
-    # Waveform + Spectrogram + MFCC Heatmap
     st.markdown("## 🎵 Audio Visualization")
     col_wave, col_spec, col_mfcc = st.columns(3)
     y = result['y']
@@ -403,7 +415,6 @@ def display_results(result):
         fig_mfcc.update_layout(title="MFCC (40 coefficients)", xaxis_title="Time frames", yaxis_title="Coefficient", height=300, **dark_layout())
         st.plotly_chart(fig_mfcc, use_container_width=True)
 
-    # Model Predictions
     st.markdown("## 🤖 Model Predictions")
     p1, p2 = st.columns(2)
     with p1:
@@ -425,7 +436,6 @@ def display_results(result):
         </div>
         """, unsafe_allow_html=True)
 
-    # Final Prediction
     st.markdown("## 🏆 Final Prediction")
     st.markdown(f"""
     <div class="final-card">
@@ -437,7 +447,6 @@ def display_results(result):
     </div>
     """, unsafe_allow_html=True)
 
-    # Emotion Analytics (ranking + bar + donut)
     st.markdown("## 📈 Emotion Analytics")
     a1, a2 = st.columns([1, 2])
     prob_df = result['prob_df']
@@ -467,7 +476,7 @@ def display_results(result):
     st.plotly_chart(fig_donut, use_container_width=True)
 
 # =====================================================
-# HALAMAN HOME
+# HALAMAN HOME (lebih menarik)
 # =====================================================
 def show_home():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -485,11 +494,10 @@ def show_home():
     </div>
     """, unsafe_allow_html=True)
 
-    # Tombol navigasi ke Upload (fix)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("🚀 Mulai Analisis", use_container_width=True):
-            st.session_state["page"] = "📤 Upload Audio"
+            st.session_state["page"] = "Upload Audio"
             st.rerun()
 
     st.markdown("---")
@@ -501,46 +509,51 @@ def show_home():
     dan model **Machine Learning** (KNN & SVM) yang dilatih pada dataset **RAVDESS**.
     """)
 
-    # Workflow
+    # Workflow dengan grid yang rapi (menggunakan columns)
     st.markdown("## 🔄 Workflow")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown("""
-        <div style="text-align:center; padding:20px; background:rgba(30,41,59,0.5); border-radius:16px;">
+        <div class="workflow-item">
             <h1 style="font-size:3rem;">🎤</h1>
             <p><strong>Upload Audio</strong></p>
+            <p style="font-size:0.8rem; color:#94a3b8;">Upload file suara</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
-        st.markdown("<p style='text-align:center; font-size:2rem; color:#60a5fa;'>→</p>", unsafe_allow_html=True)
+        st.markdown('<p class="workflow-arrow">→</p>', unsafe_allow_html=True)
     with col3:
         st.markdown("""
-        <div style="text-align:center; padding:20px; background:rgba(30,41,59,0.5); border-radius:16px;">
+        <div class="workflow-item">
             <h1 style="font-size:3rem;">🎼</h1>
             <p><strong>Ekstraksi MFCC</strong></p>
+            <p style="font-size:0.8rem; color:#94a3b8;">Ambil fitur audio</p>
         </div>
         """, unsafe_allow_html=True)
     with col4:
-        st.markdown("<p style='text-align:center; font-size:2rem; color:#60a5fa;'>→</p>", unsafe_allow_html=True)
+        st.markdown('<p class="workflow-arrow">→</p>', unsafe_allow_html=True)
     with col1:
         st.markdown("""
-        <div style="text-align:center; padding:20px; background:rgba(30,41,59,0.5); border-radius:16px;">
+        <div class="workflow-item">
             <h1 style="font-size:3rem;">🤖</h1>
             <p><strong>Prediksi Emosi</strong></p>
+            <p style="font-size:0.8rem; color:#94a3b8;">Model KNN & SVM</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
-        st.markdown("<p style='text-align:center; font-size:2rem; color:#60a5fa;'>→</p>", unsafe_allow_html=True)
+        st.markdown('<p class="workflow-arrow">→</p>', unsafe_allow_html=True)
     with col3:
         st.markdown("""
-        <div style="text-align:center; padding:20px; background:rgba(30,41,59,0.5); border-radius:16px;">
+        <div class="workflow-item">
             <h1 style="font-size:3rem;">📄</h1>
-            <p><strong>Laporan & Visualisasi</strong></p>
+            <p><strong>Laporan & Visual</strong></p>
+            <p style="font-size:0.8rem; color:#94a3b8;">Hasil dan grafik</p>
         </div>
         """, unsafe_allow_html=True)
 
-    # Dataset Statistics
     st.markdown("---")
+
+    # Dataset Statistics
     st.markdown("## 📊 Dataset RAVDESS")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -614,7 +627,7 @@ def show_upload():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN LIVE RECORD
+# HALAMAN LIVE RECORD (dengan indikator dan tombol jelas)
 # =====================================================
 def show_live_record():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -625,25 +638,66 @@ def show_live_record():
     </div>
     """, unsafe_allow_html=True)
 
-    audio_bytes = audio_recorder(
-        text="Klik untuk mulai merekam",
-        recording_color="#e74c3c",
-        neutral_color="#2563eb",
-        icon_size="3x",
-        energy_threshold=0.5,
-        pause_threshold=2.0,
-        sample_rate=16000
-    )
+    # State untuk recording
+    if "recording" not in st.session_state:
+        st.session_state.recording = False
 
-    if audio_bytes:
-        st.audio(audio_bytes, format="audio/wav")
-        with st.status("🧠 Menganalisis rekaman...", expanded=False) as status:
-            result = analyze_audio(audio_bytes, "recorded.wav")
-            status.update(label="✅ Selesai!", state="complete")
-        st.toast("🎙️ Analisis rekaman selesai!", icon="🎤")
-        display_results(result)
+    # Tombol mulai/berhenti
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        if not st.session_state.recording:
+            if st.button("🔴 Mulai Rekam", use_container_width=True):
+                st.session_state.recording = True
+                st.rerun()
+        else:
+            if st.button("⏹️ Berhenti Rekam", use_container_width=True):
+                st.session_state.recording = False
+                st.rerun()
+
+    # Indikator rekaman
+    with col2:
+        if st.session_state.recording:
+            st.markdown("""
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="recording-indicator"></span>
+                <span style="color:#ef4444; font-weight:600;">Merekam...</span>
+                <span style="color:#94a3b8; font-size:0.9rem;">(klik Berhenti untuk menyelesaikan)</span>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="color:#94a3b8;">⏸️ Tidak merekam</span>
+                <span style="color:#94a3b8; font-size:0.9rem;">(klik Mulai Rekam untuk memulai)</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Komponen audio_recorder hanya muncul saat rekaman aktif
+    if st.session_state.recording:
+        audio_bytes = audio_recorder(
+            text="Klik untuk mulai merekam",
+            recording_color="#e74c3c",
+            neutral_color="#2563eb",
+            icon_size="3x",
+            energy_threshold=0.5,
+            pause_threshold=2.0,
+            sample_rate=16000,
+            key="recorder"
+        )
+        if audio_bytes:
+            st.audio(audio_bytes, format="audio/wav")
+            with st.status("🧠 Menganalisis rekaman...", expanded=False) as status:
+                result = analyze_audio(audio_bytes, "recorded.wav")
+                status.update(label="✅ Selesai!", state="complete")
+            st.toast("🎙️ Analisis rekaman selesai!", icon="🎤")
+            display_results(result)
+            # Matikan state recording setelah selesai
+            st.session_state.recording = False
+            st.rerun()
     else:
-        st.info("Tekan tombol di atas untuk mulai merekam.")
+        st.info("Tekan tombol **Mulai Rekam** untuk memulai perekaman.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -667,7 +721,6 @@ def show_analytics():
     result = st.session_state["result"]
     prob_df = result['prob_df']
 
-    # Top 3 Emotion Candidates
     st.markdown("### 🏅 Top 3 Emotion Candidates")
     top3 = prob_df.head(3)
     cols = st.columns(3)
@@ -682,8 +735,6 @@ def show_analytics():
             """, unsafe_allow_html=True)
 
     st.markdown("---")
-
-    # Pitch Analysis
     st.markdown("### 🎵 Pitch Analysis")
     c1, c2 = st.columns(2)
     with c1:
@@ -691,7 +742,6 @@ def show_analytics():
     with c2:
         st.metric("📊 Pitch Std Dev", f"{result['pitch_std']:.1f} Hz")
 
-    # MFCC Heatmap full
     st.markdown("### 🎼 MFCC Heatmap (Full)")
     fig_mfcc_full = go.Figure(data=go.Heatmap(z=result['mfcc'], colorscale="RdBu", zmid=0))
     fig_mfcc_full.update_layout(
@@ -703,13 +753,11 @@ def show_analytics():
     )
     st.plotly_chart(fig_mfcc_full, use_container_width=True)
 
-    # Bar chart
     st.markdown("### 📊 Distribusi Probabilitas")
     fig_bar_full = px.bar(prob_df, x="Emotion", y="Probability", color="Probability", color_continuous_scale="Viridis")
     fig_bar_full.update_layout(height=400, **dark_layout())
     st.plotly_chart(fig_bar_full, use_container_width=True)
 
-    # Radar chart
     st.markdown("### 🕸️ Radar Emosi")
     categories = prob_df["Emotion"].tolist()
     values = prob_df["Probability"].tolist()
@@ -730,7 +778,6 @@ def show_analytics():
     )
     st.plotly_chart(fig_radar, use_container_width=True)
 
-    # Insight
     st.markdown("### 🤖 AI Insight")
     insight_text = generate_insight(result)
     st.markdown(f'<div class="insight-box">{insight_text}</div>', unsafe_allow_html=True)
@@ -739,7 +786,7 @@ def show_analytics():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN REPORT (dengan PDF)
+# HALAMAN REPORT
 # =====================================================
 def show_report():
     st.markdown('<div class="fade-in">', unsafe_allow_html=True)
@@ -757,7 +804,6 @@ def show_report():
 
     result = st.session_state["result"]
 
-    # Ringkasan
     st.markdown("### 📋 Ringkasan")
     col1, col2 = st.columns(2)
     with col1:
@@ -775,11 +821,9 @@ def show_report():
         - **Confidence Level**: {'High' if result['confidence']>=0.8 else 'Medium' if result['confidence']>=0.6 else 'Low'}
         """)
 
-    # Tabel probabilitas
     st.markdown("### 📊 Tabel Probabilitas")
     st.dataframe(result['prob_df'].style.format({'Probability': '{:.2%}'}), use_container_width=True)
 
-    # Download CSV
     csv = result['prob_df'].to_csv(index=False).encode('utf-8')
     st.download_button(
         label="📥 Download Probabilitas (CSV)",
@@ -788,7 +832,6 @@ def show_report():
         mime="text/csv"
     )
 
-    # Download TXT
     report_text = f"""
     SPEECH EMOTION RECOGNITION REPORT
     ==================================
@@ -812,19 +855,14 @@ def show_report():
         mime="text/plain"
     )
 
-    # Download PDF (menggunakan reportlab)
     def generate_pdf(result):
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
-        
-        # Title
         c.setFont("Helvetica-Bold", 20)
         c.drawString(100, height - 100, "Speech Emotion Recognition Report")
         c.setFont("Helvetica", 12)
         c.drawString(100, height - 130, f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        
-        # Details
         y = height - 170
         c.setFont("Helvetica-Bold", 14)
         c.drawString(100, y, "Audio Details")
@@ -838,8 +876,6 @@ def show_report():
         y -= 20
         c.drawString(100, y, f"Pitch Mean: {result['pitch_mean']:.1f} Hz")
         y -= 30
-
-        # Prediction
         c.setFont("Helvetica-Bold", 14)
         c.drawString(100, y, "Prediction")
         y -= 25
@@ -852,8 +888,6 @@ def show_report():
         y -= 20
         c.drawString(100, y, f"SVM: {result['emotion_svm'].upper()}")
         y -= 30
-
-        # Probabilities table (top 5)
         c.setFont("Helvetica-Bold", 14)
         c.drawString(100, y, "Top 5 Emotion Probabilities")
         y -= 25
@@ -862,7 +896,6 @@ def show_report():
         for _, row in top5.iterrows():
             c.drawString(100, y, f"{row['Emotion']}: {row['Probability']:.2%}")
             y -= 20
-
         c.save()
         buffer.seek(0)
         return buffer
@@ -906,8 +939,13 @@ def show_about():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =====================================================
-# NAVIGASI SIDEBAR
+# NAVIGASI CEPAT MENGGUNAKAN st.navigation (Streamlit 1.36+)
 # =====================================================
+# Karena kita menggunakan st.sidebar.radio, kita optimasi dengan session state
+if "page" not in st.session_state:
+    st.session_state["page"] = "Home"
+
+# Sidebar
 with st.sidebar:
     if os.path.exists("assets/logo_kampus.png"):
         st.image("assets/logo_kampus.png", width=180)
@@ -915,12 +953,13 @@ with st.sidebar:
         st.markdown("### 🎤 SER")
 
     st.markdown("---")
-    pages = ["🏠 Home", "📤 Upload Audio", "🎙️ Live Record", "📊 Analytics", "📄 Report", "📖 About"]
-    # Gunakan session state untuk menyimpan pilihan
-    if "page" not in st.session_state:
-        st.session_state["page"] = "🏠 Home"
-    choice = st.radio("Navigasi", pages, index=pages.index(st.session_state["page"]))
-    st.session_state["page"] = choice
+    pages = ["Home", "Upload Audio", "Live Record", "Analytics", "Report", "About"]
+    choice = st.radio("Navigasi", pages, index=pages.index(st.session_state["page"]), key="nav")
+    
+    # Jika pilihan berubah, update session state dan rerun
+    if choice != st.session_state["page"]:
+        st.session_state["page"] = choice
+        st.rerun()
 
     st.markdown("---")
     with st.expander("🤖 Model"):
@@ -930,22 +969,22 @@ with st.sidebar:
     with st.expander("📊 Dataset"):
         st.write("RAVDESS (24 aktor, 8 emosi)")
     st.markdown("---")
-    st.caption("v2.1 • Dibangun dengan Streamlit")
+    st.caption("v2.2 • Dibangun dengan Streamlit")
 
 # =====================================================
-# RENDER HALAMAN
+# RENDER HALAMAN BERDASARKAN SESSION STATE
 # =====================================================
-if choice == "🏠 Home":
+if st.session_state["page"] == "Home":
     show_home()
-elif choice == "📤 Upload Audio":
+elif st.session_state["page"] == "Upload Audio":
     show_upload()
-elif choice == "🎙️ Live Record":
+elif st.session_state["page"] == "Live Record":
     show_live_record()
-elif choice == "📊 Analytics":
+elif st.session_state["page"] == "Analytics":
     show_analytics()
-elif choice == "📄 Report":
+elif st.session_state["page"] == "Report":
     show_report()
-elif choice == "📖 About":
+elif st.session_state["page"] == "About":
     show_about()
 
 # =====================================================
