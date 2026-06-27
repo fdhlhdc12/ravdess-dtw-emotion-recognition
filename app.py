@@ -1285,7 +1285,7 @@ def show_dashboard():
     """, unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN PREDIKSI
+# HALAMAN PREDIKSI (VERSI UPDATE - LEBIH BAGUS)
 # =====================================================
 def show_prediksi():
     st.markdown("""
@@ -1295,16 +1295,23 @@ def show_prediksi():
     </div>
     """, unsafe_allow_html=True)
     
+    # Tabs dengan styling lebih bagus
     tab1, tab2 = st.tabs(["📤 Upload Audio", "🎙️ Rekam Suara"])
     
     with tab1:
         st.markdown("""
-        <div class="upload-area">
-            <div class="icon">📁</div>
-            <p>Drag & Drop file audio di sini</p>
-            <p>atau klik untuk memilih file</p>
-            <p style="color:#64748b; font-size:12px; margin-top:8px;">Format didukung: WAV, MP3, M4A, OGG, FLAC</p>
-            <p style="color:#64748b; font-size:12px;">Maksimal ukuran file: 200MB</p>
+        <div style="border:2px dashed rgba(255,255,255,0.12); border-radius:20px; padding:50px 40px; text-align:center; margin-bottom:20px; background:rgba(255,255,255,0.02); transition:all 0.3s ease;">
+            <div style="font-size:56px; margin-bottom:12px;">📁</div>
+            <p style="color:#e2e8f0; font-weight:600; font-size:17px; margin:8px 0;">Drag & Drop file audio di sini</p>
+            <p style="color:#94a3b8; font-size:14px;">atau klik untuk memilih file</p>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px;">
+                <span style="background:rgba(255,255,255,0.05); padding:4px 14px; border-radius:20px; color:#94a3b8; font-size:12px; border:1px solid rgba(255,255,255,0.06);">WAV</span>
+                <span style="background:rgba(255,255,255,0.05); padding:4px 14px; border-radius:20px; color:#94a3b8; font-size:12px; border:1px solid rgba(255,255,255,0.06);">MP3</span>
+                <span style="background:rgba(255,255,255,0.05); padding:4px 14px; border-radius:20px; color:#94a3b8; font-size:12px; border:1px solid rgba(255,255,255,0.06);">M4A</span>
+                <span style="background:rgba(255,255,255,0.05); padding:4px 14px; border-radius:20px; color:#94a3b8; font-size:12px; border:1px solid rgba(255,255,255,0.06);">OGG</span>
+                <span style="background:rgba(255,255,255,0.05); padding:4px 14px; border-radius:20px; color:#94a3b8; font-size:12px; border:1px solid rgba(255,255,255,0.06);">FLAC</span>
+            </div>
+            <p style="color:#64748b; font-size:12px; margin-top:12px;">Maksimal ukuran file: 200MB</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1318,17 +1325,29 @@ def show_prediksi():
         if uploaded_file is not None:
             audio_bytes = uploaded_file.read()
             file_size = len(audio_bytes) / (1024 * 1024)
+            
+            # Tampilkan info file yang diupload dengan style lebih bagus
             st.markdown(f"""
-            <div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:12px 16px; border:1px solid rgba(255,255,255,0.06); margin:12px 0; display:flex; align-items:center; gap:12px;">
-                <span style="font-size:20px;">🎵</span>
-                <div>
-                    <span style="color:#e2e8f0; font-weight:500;">{uploaded_file.name}</span>
-                    <span style="color:#64748b; font-size:13px; margin-left:12px;">• {file_size:.1f} MB</span>
+            <div style="background:rgba(108,99,255,0.08); border-radius:16px; padding:16px 20px; border:1px solid rgba(108,99,255,0.15); margin:16px 0; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                <span style="font-size:28px;">🎵</span>
+                <div style="flex:1;">
+                    <span style="color:#e2e8f0; font-weight:600; font-size:15px;">{uploaded_file.name}</span>
+                    <div style="display:flex; gap:16px; margin-top:2px; flex-wrap:wrap;">
+                        <span style="color:#94a3b8; font-size:13px;">📦 {file_size:.1f} MB</span>
+                        <span style="color:#94a3b8; font-size:13px;">✅ Siap diproses</span>
+                    </div>
                 </div>
+                <span style="background:#10b981; color:white; padding:4px 14px; border-radius:20px; font-size:12px; font-weight:600;">✓ Terupload</span>
             </div>
             """, unsafe_allow_html=True)
             
+            # Audio player dengan container yang rapi
+            st.markdown("""
+            <div style="background:rgba(255,255,255,0.03); border-radius:16px; padding:16px; border:1px solid rgba(255,255,255,0.06); margin-bottom:16px;">
+                <p style="color:#94a3b8; font-size:13px; margin-bottom:8px;">▶️ Preview Audio</p>
+            """, unsafe_allow_html=True)
             st.audio(audio_bytes, format="audio/wav")
+            st.markdown("</div>", unsafe_allow_html=True)
             
             with st.status("🔮 Menganalisis emosi...", expanded=False) as status:
                 result = analyze_audio(audio_bytes, uploaded_file.name)
@@ -1339,24 +1358,64 @@ def show_prediksi():
     
     with tab2:
         st.markdown("""
-        <div style="text-align:center; padding:30px; background:rgba(255,255,255,0.03); border-radius:16px; border:1px solid rgba(255,255,255,0.06); margin-bottom:20px;">
-            <p style="color:#94a3b8;">Klik tombol di bawah, izinkan akses mikrofon, rekam, lalu tekan stop (atau diam selama 2 detik). Hasil akan muncul otomatis.</p>
+        <div style="text-align:center; padding:40px 30px; background:rgba(255,255,255,0.02); border-radius:20px; border:1px solid rgba(255,255,255,0.06); margin-bottom:24px;">
+            <div style="font-size:48px; margin-bottom:12px;">🎙️</div>
+            <p style="color:#94a3b8; font-size:15px; max-width:500px; margin:0 auto; line-height:1.7;">
+                Klik tombol di bawah, izinkan akses mikrofon, rekam, lalu tekan stop 
+                <span style="color:#64748b;">(atau diam selama 2 detik)</span>. 
+                Hasil akan muncul otomatis.
+            </p>
         </div>
+        """, unsafe_allow_html=True)
+        
+        # Audio recorder dengan container yang lebih rapi
+        st.markdown("""
+        <div style="display:flex; justify-content:center; margin-bottom:20px;">
         """, unsafe_allow_html=True)
         
         audio_bytes = audio_recorder(
             text="🎙️ Klik untuk merekam",
             recording_color="#e74c3c",
             neutral_color="#6c63ff",
-            icon_size="3x",
+            icon_size="4x",
             energy_threshold=0.5,
             pause_threshold=2.0,
             sample_rate=16000,
             key="recorder"
         )
         
+        st.markdown("</div>", unsafe_allow_html=True)
+        
         if audio_bytes:
+            # Tampilkan info rekaman berhasil
+            st.markdown("""
+            <div style="background:rgba(34,197,94,0.1); border-radius:16px; padding:14px 20px; border:1px solid rgba(34,197,94,0.2); margin:12px 0; display:flex; align-items:center; gap:12px;">
+                <span style="font-size:24px;">✅</span>
+                <div>
+                    <span style="color:#e2e8f0; font-weight:600;">Rekaman berhasil!</span>
+                    <span style="color:#94a3b8; font-size:13px; margin-left:8px;">Menganalisis suara Anda...</span>
+                </div>
+                <span style="margin-left:auto; display:flex; gap:4px;">
+                    <span style="display:inline-block; width:8px; height:8px; background:#34d399; border-radius:50%; animation:pulse 1s infinite;"></span>
+                    <span style="display:inline-block; width:8px; height:8px; background:#34d399; border-radius:50%; animation:pulse 1s infinite 0.3s;"></span>
+                    <span style="display:inline-block; width:8px; height:8px; background:#34d399; border-radius:50%; animation:pulse 1s infinite 0.6s;"></span>
+                </span>
+            </div>
+            <style>
+            @keyframes pulse {
+                0% { opacity: 0.3; transform: scale(0.8); }
+                50% { opacity: 1; transform: scale(1.2); }
+                100% { opacity: 0.3; transform: scale(0.8); }
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div style="background:rgba(255,255,255,0.03); border-radius:16px; padding:16px; border:1px solid rgba(255,255,255,0.06); margin-bottom:16px;">
+                <p style="color:#94a3b8; font-size:13px; margin-bottom:8px;">▶️ Preview Rekaman</p>
+            """, unsafe_allow_html=True)
             st.audio(audio_bytes, format="audio/wav")
+            st.markdown("</div>", unsafe_allow_html=True)
             
             with st.status("🔮 Menganalisis rekaman...", expanded=False) as status:
                 result = analyze_audio(audio_bytes, "recorded.wav")
@@ -1365,15 +1424,25 @@ def show_prediksi():
             st.toast("🎙️ Analisis rekaman selesai!", icon="🎤")
             display_results(result)
         else:
-            st.info("Tekan tombol di atas untuk mulai merekam.")
+            st.markdown("""
+            <div style="text-align:center; padding:24px; background:rgba(255,255,255,0.02); border-radius:16px; border:1px dashed rgba(255,255,255,0.08);">
+                <p style="color:#64748b; font-size:14px;">💡 Tekan tombol di atas untuk mulai merekam.</p>
+            </div>
+            """, unsafe_allow_html=True)
     
-    # Reset Button
-    col1, col2, col3 = st.columns([1, 1, 1])
+    # Reset Button dengan styling lebih bagus
+    st.markdown("""
+    <div style="margin-top:24px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:center; gap:16px;">
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("🔄 Prediksi Baru", use_container_width=True):
+        if st.button("🔄 Prediksi Baru", use_container_width=True, type="primary"):
             st.session_state.pop("result", None)
             st.rerun()
-
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
 # =====================================================
 # HALAMAN ANALYTICS
 # =====================================================
