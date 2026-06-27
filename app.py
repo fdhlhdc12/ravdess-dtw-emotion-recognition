@@ -1026,7 +1026,7 @@ def display_results(result):
         """, unsafe_allow_html=True)
 
 # =====================================================
-# HALAMAN DASHBOARD
+# HALAMAN DASHBOARD (LENGKAP - TANPA GAMBAR DI KEUNGGULAN)
 # =====================================================
 def show_dashboard():
     # Hero Section dengan gambar
@@ -1066,7 +1066,9 @@ def show_dashboard():
         </div>
         """, unsafe_allow_html=True)
     
-    # Statistik Dataset - 6 kolom
+    # ============================================================
+    # STATISTIK DATASET - 6 KOLOM
+    # ============================================================
     st.markdown("""
     <div style="margin:32px 0 16px 0;">
         <h2 style="color:white; font-size:22px; font-weight:700;">📊 Statistik Dataset</h2>
@@ -1076,60 +1078,68 @@ def show_dashboard():
     col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
         st.markdown("""
-        <div class="dataset-stat">
-            <div class="number">2,880</div>
-            <div class="label">Audio Files</div>
-            <div class="sub">.wav</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:16px; padding:20px 12px; text-align:center; border:1px solid rgba(255,255,255,0.06); transition:all 0.3s ease;">
+            <div style="font-size:28px; font-weight:700; color:white;">2,880</div>
+            <div style="color:#94a3b8; font-size:13px; margin-top:2px;">Audio Files</div>
+            <div style="color:#64748b; font-size:11px;">.wav</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown("""
-        <div class="dataset-stat">
-            <div class="number">24</div>
-            <div class="label">Actors</div>
-            <div class="sub">12 M, 12 F</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:16px; padding:20px 12px; text-align:center; border:1px solid rgba(255,255,255,0.06); transition:all 0.3s ease;">
+            <div style="font-size:28px; font-weight:700; color:white;">24</div>
+            <div style="color:#94a3b8; font-size:13px; margin-top:2px;">Actors</div>
+            <div style="color:#64748b; font-size:11px;">12 M, 12 F</div>
         </div>
         """, unsafe_allow_html=True)
     with col3:
         st.markdown("""
-        <div class="dataset-stat">
-            <div class="number">8</div>
-            <div class="label">Emosi</div>
-            <div class="sub">Jenis berbeda</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:16px; padding:20px 12px; text-align:center; border:1px solid rgba(255,255,255,0.06); transition:all 0.3s ease;">
+            <div style="font-size:28px; font-weight:700; color:white;">8</div>
+            <div style="color:#94a3b8; font-size:13px; margin-top:2px;">Emosi</div>
+            <div style="color:#64748b; font-size:11px;">Jenis berbeda</div>
         </div>
         """, unsafe_allow_html=True)
     with col4:
         st.markdown("""
-        <div class="dataset-stat">
-            <div class="number">24.6</div>
-            <div class="label">Durasi Total</div>
-            <div class="sub">jam</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:16px; padding:20px 12px; text-align:center; border:1px solid rgba(255,255,255,0.06); transition:all 0.3s ease;">
+            <div style="font-size:28px; font-weight:700; color:white;">24.6</div>
+            <div style="color:#94a3b8; font-size:13px; margin-top:2px;">Durasi Total</div>
+            <div style="color:#64748b; font-size:11px;">jam</div>
         </div>
         """, unsafe_allow_html=True)
     with col5:
         st.markdown("""
-        <div class="dataset-stat">
-            <div class="number">3.07</div>
-            <div class="label">Rata-rata Durasi</div>
-            <div class="sub">detik</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:16px; padding:20px 12px; text-align:center; border:1px solid rgba(255,255,255,0.06); transition:all 0.3s ease;">
+            <div style="font-size:28px; font-weight:700; color:white;">3.07</div>
+            <div style="color:#94a3b8; font-size:13px; margin-top:2px;">Rata-rata Durasi</div>
+            <div style="color:#64748b; font-size:11px;">detik</div>
         </div>
         """, unsafe_allow_html=True)
     with col6:
         st.markdown("""
-        <div class="dataset-stat">
-            <div class="number">1.2</div>
-            <div class="label">Ukuran Dataset</div>
-            <div class="sub">GB</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:16px; padding:20px 12px; text-align:center; border:1px solid rgba(255,255,255,0.06); transition:all 0.3s ease;">
+            <div style="font-size:28px; font-weight:700; color:white;">1.2</div>
+            <div style="color:#94a3b8; font-size:13px; margin-top:2px;">Ukuran Dataset</div>
+            <div style="color:#64748b; font-size:11px;">GB</div>
         </div>
         """, unsafe_allow_html=True)
     
-    # Apa itu SER + Emosi (dengan gambar)
+    # ============================================================
+    # APA ITU SER + EMOSI
+    # ============================================================
+    st.markdown("""
+    <div style="margin:32px 0 16px 0;">
+        <h2 style="color:white; font-size:22px; font-weight:700;">🧠 Tentang Speech Emotion Recognition</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("""
-        <div class="glass-card" style="height:100%;">
-            <h3>🧠 Apa itu Speech Emotion Recognition?</h3>
-            <p>Speech Emotion Recognition (SER) adalah teknologi yang mampu mengidentifikasi emosi manusia dari karakteristik suara. Sistem ini menganalisis pola suara seperti intonasi, pitch, energi, dan ritme untuk menentukan emosi yang diucapkan.</p>
+        <div style="background:rgba(255,255,255,0.04); border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.06); height:100%;">
+            <h3 style="color:white; margin-bottom:12px;">🧠 Apa itu Speech Emotion Recognition?</h3>
+            <p style="color:#94a3b8; line-height:1.7;">Speech Emotion Recognition (SER) adalah teknologi yang mampu mengidentifikasi emosi manusia dari karakteristik suara. Sistem ini menganalisis pola suara seperti intonasi, pitch, energi, dan ritme untuk menentukan emosi yang diucapkan.</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -1138,38 +1148,40 @@ def show_dashboard():
                 st.image("assets/microphone_emotions.png", use_container_width=True)
             except:
                 st.markdown("""
-                <div class="glass-card" style="height:100%;">
-                    <h3>🎯 Emosi yang Dideteksi</h3>
-                    <div class="emotion-tags">
-                        <span class="emotion-tag">😊 Happy</span>
-                        <span class="emotion-tag">😢 Sad</span>
-                        <span class="emotion-tag">😠 Angry</span>
-                        <span class="emotion-tag">😨 Fearful</span>
-                        <span class="emotion-tag">😌 Calm</span>
-                        <span class="emotion-tag">😐 Neutral</span>
-                        <span class="emotion-tag">🤢 Disgust</span>
-                        <span class="emotion-tag">😲 Surprised</span>
+                <div style="background:rgba(255,255,255,0.04); border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.06); height:100%;">
+                    <h3 style="color:white; margin-bottom:12px;">🎯 Emosi yang Dideteksi</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😊 Happy</span>
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😢 Sad</span>
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😠 Angry</span>
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😨 Fearful</span>
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😌 Calm</span>
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😐 Neutral</span>
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">🤢 Disgust</span>
+                        <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😲 Surprised</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
         else:
             st.markdown("""
-            <div class="glass-card" style="height:100%;">
-                <h3>🎯 Emosi yang Dideteksi</h3>
-                <div class="emotion-tags">
-                    <span class="emotion-tag">😊 Happy</span>
-                    <span class="emotion-tag">😢 Sad</span>
-                    <span class="emotion-tag">😠 Angry</span>
-                    <span class="emotion-tag">😨 Fearful</span>
-                    <span class="emotion-tag">😌 Calm</span>
-                    <span class="emotion-tag">😐 Neutral</span>
-                    <span class="emotion-tag">🤢 Disgust</span>
-                    <span class="emotion-tag">😲 Surprised</span>
+            <div style="background:rgba(255,255,255,0.04); border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.06); height:100%;">
+                <h3 style="color:white; margin-bottom:12px;">🎯 Emosi yang Dideteksi</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😊 Happy</span>
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😢 Sad</span>
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😠 Angry</span>
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😨 Fearful</span>
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😌 Calm</span>
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😐 Neutral</span>
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">🤢 Disgust</span>
+                    <span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:40px; padding:6px 16px; color:#e2e8f0; font-size:14px; text-align:center;">😲 Surprised</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
     
-    # Keunggulan Sistem - 4 kolom
+    # ============================================================
+    # KEUNGGULAN SISTEM - 4 KOLOM (TANPA GAMBAR)
+    # ============================================================
     st.markdown("""
     <div style="margin:32px 0 16px 0;">
         <h2 style="color:white; font-size:22px; font-weight:700;">⭐ Keunggulan Sistem</h2>
@@ -1179,104 +1191,98 @@ def show_dashboard():
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown("""
-        <div class="advantage-card">
-            <div class="icon">🎯</div>
-            <div class="title">Akurasi Tinggi</div>
-            <div class="desc">Model SVM dengan performa terbaik</div>
+        <div style="background:rgba(255,255,255,0.03); border-radius:16px; padding:24px 16px; border:1px solid rgba(255,255,255,0.05); text-align:center; transition:all 0.3s ease; height:100%;">
+            <div style="font-size:40px; margin-bottom:12px;">🎯</div>
+            <div style="color:white; font-weight:700; font-size:16px; margin-bottom:4px;">Akurasi Tinggi</div>
+            <div style="color:#94a3b8; font-size:13px; line-height:1.5;">Model SVM dengan performa terbaik</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
-        if os.path.exists("assets/folder_download.png"):
-            try:
-                st.image("assets/folder_download.png", use_container_width=True)
-            except:
-                st.markdown("""
-                <div class="advantage-card">
-                    <div class="icon">📊</div>
-                    <div class="title">Ekstraksi Fitur Optimal</div>
-                    <div class="desc">MFCC + Delta + Delta² (120 fitur)</div>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-            <div class="advantage-card">
-                <div class="icon">📊</div>
-                <div class="title">Ekstraksi Fitur Optimal</div>
-                <div class="desc">MFCC + Delta + Delta² (120 fitur)</div>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="background:rgba(255,255,255,0.03); border-radius:16px; padding:24px 16px; border:1px solid rgba(255,255,255,0.05); text-align:center; transition:all 0.3s ease; height:100%;">
+            <div style="font-size:40px; margin-bottom:12px;">📊</div>
+            <div style="color:white; font-weight:700; font-size:16px; margin-bottom:4px;">Ekstraksi Fitur Optimal</div>
+            <div style="color:#94a3b8; font-size:13px; line-height:1.5;">MFCC + Delta + Delta² (120 fitur)</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col3:
         st.markdown("""
-        <div class="advantage-card">
-            <div class="icon">⚡</div>
-            <div class="title">Proses Real-time</div>
-            <div class="desc">Prediksi cepat dalam hitungan detik</div>
+        <div style="background:rgba(255,255,255,0.03); border-radius:16px; padding:24px 16px; border:1px solid rgba(255,255,255,0.05); text-align:center; transition:all 0.3s ease; height:100%;">
+            <div style="font-size:40px; margin-bottom:12px;">⚡</div>
+            <div style="color:white; font-weight:700; font-size:16px; margin-bottom:4px;">Proses Real-time</div>
+            <div style="color:#94a3b8; font-size:13px; line-height:1.5;">Prediksi cepat dalam hitungan detik</div>
         </div>
         """, unsafe_allow_html=True)
     with col4:
         st.markdown("""
-        <div class="advantage-card">
-            <div class="icon">📈</div>
-            <div class="title">Visualisasi Interaktif</div>
-            <div class="desc">Grafik dan hasil yang mudah dipahami</div>
+        <div style="background:rgba(255,255,255,0.03); border-radius:16px; padding:24px 16px; border:1px solid rgba(255,255,255,0.05); text-align:center; transition:all 0.3s ease; height:100%;">
+            <div style="font-size:40px; margin-bottom:12px;">📈</div>
+            <div style="color:white; font-weight:700; font-size:16px; margin-bottom:4px;">Visualisasi Interaktif</div>
+            <div style="color:#94a3b8; font-size:13px; line-height:1.5;">Grafik dan hasil yang mudah dipahami</div>
         </div>
         """, unsafe_allow_html=True)
     
-    # Tentang Dashboard
+    # ============================================================
+    # TENTANG DASHBOARD
+    # ============================================================
     st.markdown("""
     <div style="margin:32px 0 16px 0;">
         <h2 style="color:white; font-size:22px; font-weight:700;">📖 Tentang Dashboard</h2>
     </div>
-    <div class="glass-card" style="margin-bottom:16px;">
-        <p>Dashboard ini dirancang untuk membantu Anda memahami, memprediksi, dan menganalisis emosi manusia dari audio menggunakan teknologi Machine Learning.</p>
+    <div style="background:rgba(255,255,255,0.04); border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.06); margin-bottom:16px;">
+        <p style="color:#94a3b8; line-height:1.8;">Dashboard ini dirancang untuk membantu Anda memahami, memprediksi, dan menganalisis emosi manusia dari audio menggunakan teknologi Machine Learning.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Alur Kerja Sistem
+    # ============================================================
+    # ALUR KERJA SISTEM
+    # ============================================================
     st.markdown("""
     <div style="margin:32px 0 16px 0;">
         <h2 style="color:white; font-size:22px; font-weight:700;">🔄 Alur Kerja Sistem</h2>
     </div>
-    <div class="pipeline">
-        <div class="pipeline-step">
-            <div class="step-num">1</div>
-            <div class="step-label">Input Audio</div>
-            <div class="step-desc">Upload / Rekam</div>
+    <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:16px 0;">
+        <div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:16px 20px; text-align:center; min-width:100px; border:1px solid rgba(255,255,255,0.06); flex:1;">
+            <div style="display:inline-block; background:linear-gradient(135deg, #6c63ff, #a855f7); color:white; width:28px; height:28px; border-radius:50%; line-height:28px; font-size:13px; font-weight:700; margin-bottom:6px;">1</div>
+            <div style="color:#e2e8f0; font-size:13px; font-weight:500;">Input Audio</div>
+            <div style="color:#94a3b8; font-size:11px;">Upload / Rekam</div>
         </div>
-        <div class="pipeline-arrow">➜</div>
-        <div class="pipeline-step">
-            <div class="step-num">2</div>
-            <div class="step-label">Ekstraksi Fitur</div>
-            <div class="step-desc">MFCC + Δ + Δ²</div>
+        <div style="color:#475569; font-size:20px; display:flex; align-items:center;">➜</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:16px 20px; text-align:center; min-width:100px; border:1px solid rgba(255,255,255,0.06); flex:1;">
+            <div style="display:inline-block; background:linear-gradient(135deg, #6c63ff, #a855f7); color:white; width:28px; height:28px; border-radius:50%; line-height:28px; font-size:13px; font-weight:700; margin-bottom:6px;">2</div>
+            <div style="color:#e2e8f0; font-size:13px; font-weight:500;">Ekstraksi Fitur</div>
+            <div style="color:#94a3b8; font-size:11px;">MFCC + Δ + Δ²</div>
         </div>
-        <div class="pipeline-arrow">➜</div>
-        <div class="pipeline-step">
-            <div class="step-num">3</div>
-            <div class="step-label">Pra-pemrosesan</div>
-            <div class="step-desc">Scaling & Normalisasi</div>
+        <div style="color:#475569; font-size:20px; display:flex; align-items:center;">➜</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:16px 20px; text-align:center; min-width:100px; border:1px solid rgba(255,255,255,0.06); flex:1;">
+            <div style="display:inline-block; background:linear-gradient(135deg, #6c63ff, #a855f7); color:white; width:28px; height:28px; border-radius:50%; line-height:28px; font-size:13px; font-weight:700; margin-bottom:6px;">3</div>
+            <div style="color:#e2e8f0; font-size:13px; font-weight:500;">Pra-pemrosesan</div>
+            <div style="color:#94a3b8; font-size:11px;">Scaling & Normalisasi</div>
         </div>
-        <div class="pipeline-arrow">➜</div>
-        <div class="pipeline-step">
-            <div class="step-num">4</div>
-            <div class="step-label">Klasifikasi Model</div>
-            <div class="step-desc">Prediksi dengan SVM</div>
+        <div style="color:#475569; font-size:20px; display:flex; align-items:center;">➜</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:16px 20px; text-align:center; min-width:100px; border:1px solid rgba(255,255,255,0.06); flex:1;">
+            <div style="display:inline-block; background:linear-gradient(135deg, #6c63ff, #a855f7); color:white; width:28px; height:28px; border-radius:50%; line-height:28px; font-size:13px; font-weight:700; margin-bottom:6px;">4</div>
+            <div style="color:#e2e8f0; font-size:13px; font-weight:500;">Klasifikasi Model</div>
+            <div style="color:#94a3b8; font-size:11px;">Prediksi dengan SVM</div>
         </div>
-        <div class="pipeline-arrow">➜</div>
-        <div class="pipeline-step">
-            <div class="step-num">5</div>
-            <div class="step-label">Hasil Prediksi</div>
-            <div class="step-desc">Emosi + Confidence</div>
+        <div style="color:#475569; font-size:20px; display:flex; align-items:center;">➜</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:16px 20px; text-align:center; min-width:100px; border:1px solid rgba(255,255,255,0.06); flex:1;">
+            <div style="display:inline-block; background:linear-gradient(135deg, #6c63ff, #a855f7); color:white; width:28px; height:28px; border-radius:50%; line-height:28px; font-size:13px; font-weight:700; margin-bottom:6px;">5</div>
+            <div style="color:#e2e8f0; font-size:13px; font-weight:500;">Hasil Prediksi</div>
+            <div style="color:#94a3b8; font-size:11px;">Emosi + Confidence</div>
         </div>
-        <div class="pipeline-arrow">➜</div>
-        <div class="pipeline-step">
-            <div class="step-num">6</div>
-            <div class="step-label">Analisis & Insight</div>
-            <div class="step-desc">Visualisasi & Evaluasi</div>
+        <div style="color:#475569; font-size:20px; display:flex; align-items:center;">➜</div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:16px 20px; text-align:center; min-width:100px; border:1px solid rgba(255,255,255,0.06); flex:1;">
+            <div style="display:inline-block; background:linear-gradient(135deg, #6c63ff, #a855f7); color:white; width:28px; height:28px; border-radius:50%; line-height:28px; font-size:13px; font-weight:700; margin-bottom:6px;">6</div>
+            <div style="color:#e2e8f0; font-size:13px; font-weight:500;">Analisis & Insight</div>
+            <div style="color:#94a3b8; font-size:11px;">Visualisasi & Evaluasi</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Footer
+    # ============================================================
+    # FOOTER
+    # ============================================================
     st.markdown("""
     <div style="text-align:center; padding:20px; color:#64748b; font-size:13px; border-top:1px solid rgba(255,255,255,0.05); margin-top:20px;">
         © 2025 SER AI. All rights reserved.<br>
