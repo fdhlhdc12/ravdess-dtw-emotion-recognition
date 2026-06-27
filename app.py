@@ -982,12 +982,91 @@ def display_results(result):
         fig.update_layout(title="Waveform", xaxis_title="Time (sec)", yaxis_title="Amplitude", height=300, **dark_layout())
         st.plotly_chart(fig, use_container_width=True)
     
-    with tab2:
-        D = librosa.amplitude_to_db(np.abs(librosa.stft(y)), ref=np.max)
-        fig = go.Figure(data=go.Heatmap(z=D, colorscale="Turbo"))
-        fig.update_layout(title="Spectrogram", xaxis_title="Frames", yaxis_title="Frequency", height=300, **dark_layout())
-        st.plotly_chart(fig, use_container_width=True)
-    
+        with tab2:
+        st.markdown("""
+        <div style="text-align:center; padding:30px 20px; background:rgba(108,99,255,0.04); border-radius:20px; border:1px solid rgba(108,99,255,0.12); margin-bottom:20px;">
+            <div style="font-size:40px; margin-bottom:8px;">🎙️</div>
+            <p style="color:#94a3b8; font-size:14px; max-width:500px; margin:0 auto; line-height:1.7;">
+                Klik tombol di bawah, izinkan akses mikrofon, rekam, lalu tekan stop 
+                <span style="color:#64748b;">(atau diam selama 2 detik)</span>. 
+                Hasil akan muncul otomatis.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Audio recorder dengan layout horizontal (mic kecil + teks di samping)
+        st.markdown("""
+        <div style="display:flex; align-items:center; justify-content:center; gap:16px; background:rgba(255,255,255,0.02); border-radius:16px; padding:16px 24px; border:1px solid rgba(255,255,255,0.06); max-width:400px; margin:0 auto;">
+        """, unsafe_allow_html=True)
+        
+        # Kolom untuk recorder (lebih kecil)
+        col_rec, col_text = st.columns([1, 3])
+        
+        with col_rec:
+            audio_bytes = audio_recorder(
+                text="",
+                recording_color="#e74c3c",
+                neutral_color="#6c63ff",
+                icon_size="2x",
+                energy_threshold=0.5,
+                pause_threshold=2.0,
+                sample_rate=16000,
+                key="recorder"
+            )
+        
+        with col_text:
+            st.markdown("""
+            <div style="display:flex; align-items:center; height:100%;">
+                <span style="color:#e2e8f0; font-size:15px; font-weight:500;">🎤 Ketuk untuk merekam</span>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        if audio_bytes:
+            # Tampilkan info rekaman berhasil
+            st.markdown("""
+            <div style="background:rgba(34,197,94,0.1); border-radius:16px; padding:14px 20px; border:1px solid rgba(34,197,94,0.2); margin:16px auto; max-width:500px; display:flex; align-items:center; gap:12px;">
+                <span style="font-size:20px;">✅</span>
+                <div>
+                    <span style="color:#e2e8f0; font-weight:600;">Rekaman berhasil!</span>
+                    <span style="color:#94a3b8; font-size:13px; margin-left:8px;">Menganalisis suara Anda...</span>
+                </div>
+                <span style="margin-left:auto; display:flex; gap:4px;">
+                    <span style="display:inline-block; width:8px; height:8px; background:#34d399; border-radius:50%; animation:pulse-dot 1s infinite;"></span>
+                    <span style="display:inline-block; width:8px; height:8px; background:#34d399; border-radius:50%; animation:pulse-dot 1s infinite 0.3s;"></span>
+                    <span style="display:inline-block; width:8px; height:8px; background:#34d399; border-radius:50%; animation:pulse-dot 1s infinite 0.6s;"></span>
+                </span>
+            </div>
+            <style>
+            @keyframes pulse-dot {
+                0% { opacity: 0.3; transform: scale(0.8); }
+                50% { opacity: 1; transform: scale(1.2); }
+                100% { opacity: 0.3; transform: scale(0.8); }
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div style="background:rgba(255,255,255,0.03); border-radius:16px; padding:16px; border:1px solid rgba(255,255,255,0.06); margin:12px auto; max-width:500px;">
+                <p style="color:#94a3b8; font-size:13px; margin-bottom:8px;">▶️ Preview Rekaman</p>
+            """, unsafe_allow_html=True)
+            st.audio(audio_bytes, format="audio/wav")
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            with st.status("🔮 Menganalisis rekaman...", expanded=False) as status:
+                result = analyze_audio(audio_bytes, "recorded.wav")
+                status.update(label="✅ Selesai!", state="complete")
+            
+            st.toast("🎙️ Analisis rekaman selesai!", icon="🎤")
+            display_results(result)
+        else:
+            st.markdown("""
+            <div style="text-align:center; padding:16px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.06); max-width:400px; margin:12px auto;">
+                <p style="color:#64748b; font-size:13px;">💡 Tekan tombol di atas untuk mulai merekam.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
     with tab3:
         fig = go.Figure(data=go.Heatmap(z=result['mfcc'], colorscale="RdBu", zmid=0))
         fig.update_layout(title="MFCC Coefficients (40)", xaxis_title="Time frames", yaxis_title="Coefficient", height=300, **dark_layout())
